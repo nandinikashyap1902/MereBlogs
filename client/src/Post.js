@@ -15,6 +15,5 @@ export default function Post() {
     <p className="summary">Many flowers are possible to eat, and they have fed and sweetened many generations. The flowers form an integral part of many foods, such as salads and soaps, and are also used in jellies, jams, wine, and even tea production.</p>
       </div>
   </div>
-  
   )
 }
