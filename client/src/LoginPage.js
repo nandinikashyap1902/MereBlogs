@@ -5,24 +5,26 @@ export default function LoginPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
  async function loginInfo(ev) {
-    //console.log(username, password)
+    console.log(username, password)
    ev.preventDefault();
    try {
-  const response=  await fetch('http://localhost:4000/login', {
-      method: 'POST',
-      body: JSON.stringify({ username, password }),
-      headers:{'Content-Type':'appication/json'}
-  })
-     if (response.status === 200) {
-       alert("login successfully")
-     } else {
-      alert("login failed")
-     }
-   } catch(err) {
-     alert(err)
- }
-   
+    const response = await fetch('http://localhost:4000/login', {
+        method: 'POST',
+        body: JSON.stringify({ username, password }),
+        headers: { 'Content-Type': 'application/json' }  // Corrected typo
+    });
+    
+    // Check if the login was successful
+    if (response.status === 200) {
+        alert("Login successful");
+    } else {
+        alert("Login failed");
+    }
+} catch (err) {
+    alert("An error occurred: " + err.message);
 }
+}
+
   return (
       <form className='login' onSubmit={loginInfo}>
           <h1>Login</h1>

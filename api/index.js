@@ -35,8 +35,11 @@ app.post('/register', (req, res) => {
 })
 app.post('/login',async (req, res) => {
     const { username, password } = req.body;
+    // console.log({ username, password })
     const userDoc = await User.findOne({ username })
+    //console.log(userDoc.password)
     const passOk = bcrypt.compareSync(password, userDoc.password)
+    console.log(passOk)
     res.json(passOk)
 })
 app.listen(4000)
