@@ -1,9 +1,11 @@
 import React from 'react'
 import "./App.css"
 import { useState } from 'react'
+import {Navigate} from 'react-router-dom'
 export default function LoginPage() {
   const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
+    const [password, setPassword] = useState('')
+    const [redirect,setRedirect] = useState(false)
  async function loginInfo(ev) {
     console.log(username, password)
    ev.preventDefault();
@@ -11,12 +13,14 @@ export default function LoginPage() {
     const response = await fetch('http://localhost:4000/login', {
         method: 'POST',
         body: JSON.stringify({ username, password }),
-        headers: { 'Content-Type': 'application/json' }  // Corrected typo
-    });
+        headers: { 'Content-Type': 'application/json' },  // Corrected typo
+        credentials:'include'
+     });
     
     // Check if the login was successful
-    if (response.status === 200) {
+    if (response.ok) {
         alert("Login successful");
+        setRedirect(true)
     } else {
         alert("Login failed");
     }
@@ -24,7 +28,9 @@ export default function LoginPage() {
     alert("An error occurred: " + err.message);
 }
 }
-
+    if (redirect) {
+        return <Navigate to={'/'} />
+}
   return (
       <form className='login' onSubmit={loginInfo}>
           <h1>Login</h1>
