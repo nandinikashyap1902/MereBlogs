@@ -3,20 +3,23 @@ import './App.css';
 import Home from './Home';
 //import Header from './Header';
 import Layout from './Layout';
-
+import { UserContextProvider }  from './UserContext';
 import { Route,Routes } from 'react-router-dom';
 import LoginPage from './LoginPage';
 import RegisterPage from './RegisterPage';
+import CreatePost from './CreatePost';
 function App() {
   return (
+    <UserContextProvider>
     <Routes>
       <Route path="/" element={<Layout/>}>
       <Route index element={<Home/>}/>
         <Route path='/login' element={<LoginPage/>} />
-        <Route path='/register' element={<RegisterPage/>} />
+          <Route path='/register' element={<RegisterPage />} />
+          <Route path="/create" element={<CreatePost/>} />
         </Route>
     </Routes>
-
+    </UserContextProvider>
     
   );
 }

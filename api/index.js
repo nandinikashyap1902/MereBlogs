@@ -7,11 +7,13 @@ const User = require('./models/User')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const secret = "nkuyguy76t68yihiuh8999ybyf"
+const multer = require('multer')
 
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 app.use(cors({credentials:true,origin:'http://localhost:3000'}))
 app.use(express.json())
+
 mongoose.connect("mongodb://localhost:27017/User",{
 }).then(() => {
     console.log('MongoDB connection established successfully.');
@@ -44,7 +46,7 @@ app.post('/login',async (req, res) => {
     if (passOk) {
         jwt.sign({ username, id: userDoc._id }, secret, {}, (err,token) => {
             if (err) throw err
-         res.cookie('token',token).json('oK')
+         res.cookie('token',token).json({id:userDoc._id,username})
         })
     } else {
         res.status(400).json('wrong credentials')
@@ -58,6 +60,12 @@ app.get('/profile', (req, res) => {
         res.json(info)
     })
     
-    
+    app.post('/logout', (req, res) => {
+        res.cookie('token','').json('ok')
+    })
+
+    app.post('/post', (req, res)=>{
+        
+    })
 })
 app.listen(4000)

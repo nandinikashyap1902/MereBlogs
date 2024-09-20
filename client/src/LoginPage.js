@@ -1,13 +1,14 @@
 import React from 'react'
 import "./App.css"
-import { useState } from 'react'
+import { useState,useContext } from 'react'
 import {Navigate} from 'react-router-dom'
+import { UserContext } from './UserContext'
 export default function LoginPage() {
   const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
-    const [redirect,setRedirect] = useState(false)
+    const [redirect, setRedirect] = useState(false)
+    const {setUserInfo} = useContext(UserContext)
  async function loginInfo(ev) {
-    console.log(username, password)
    ev.preventDefault();
    try {
     const response = await fetch('http://localhost:4000/login', {
@@ -20,7 +21,10 @@ export default function LoginPage() {
     // Check if the login was successful
     if (response.ok) {
         alert("Login successful");
-        setRedirect(true)
+        response.json().then(userInfo => {
+            setUserInfo(userInfo)
+            setRedirect(true)
+        })
     } else {
         alert("Login failed");
     }
