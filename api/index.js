@@ -13,6 +13,7 @@ const fs = require('fs')
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 
+app.use('/uploads',express.static(__dirname + '/uploads'))
 app.use(cors({credentials:true,origin:'http://localhost:3000'}))
 app.use(express.json())
 const Post = require('./models/Post')
@@ -61,30 +62,41 @@ app.get('/profile', (req, res) => {
         if (err) throw err;
         res.json(info)
     })
-    
+}) 
+
     app.post('/logout', (req, res) => {
         res.cookie('token','').json('ok')
     })
 
-    app.post('/post', uploadMiddleware.single('file'), async(req, res) => {
+    app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
+       
         const{originalname,path}=req.file
         const parts = originalname.split('.')
         const ext = parts[parts.length - 1];
         const newPath = path + '.' + ext
         fs.renameSync(path, newPath)
-        
-        const { title, summary, content } = req.body;
-        const postDoc = await Post.create({
-            title,
-            summary,
-            content,
-            cover:newPath
+
+        const { token } = req.cookies;
+        jwt.verify(token, secret, {}, async(err,info) => {
+            if (err) throw err;
+            const { title, summary, content} = req.body;
+            const postDoc = await Post.create({
+                title,
+                summary,
+                content,
+                cover: newPath,
+                author:info.id
+            })
+            res.json(postDoc)
         })
-        res.json(postDoc)
+
+       
     })
     app.get('/post', async (req, res) => {
         
-        res.json(await Post.find())
+        res.json(await Post.find()
+            .populate('author', ['username'])
+         .sort({createdAt:-1}).limit(20))
     })
-})
+
 app.listen(4000)

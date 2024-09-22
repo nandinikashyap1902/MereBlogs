@@ -7,6 +7,6 @@ const PostSchema = new Schema({
     cover: String,
     author:{type:Schema.Types.ObjectId,ref:'User'}
 })
-
+PostSchema.set('timestamps',true)
 const PostModel = model('Post', PostSchema);
 module.exports =PostModel
