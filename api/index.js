@@ -70,12 +70,14 @@ app.get('/profile', (req, res) => {
 
     app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
        
-        const{originalname,path}=req.file
+        const { originalname, path } = req.file
+         //console.log(path)
         const parts = originalname.split('.')
         const ext = parts[parts.length - 1];
         const newPath = path + '.' + ext
         fs.renameSync(path, newPath)
-
+        const coverPath = newPath.replace(/\\/g, '/');
+//console.log(coverPath)
         const { token } = req.cookies;
         jwt.verify(token, secret, {}, async(err,info) => {
             if (err) throw err;
@@ -84,7 +86,7 @@ app.get('/profile', (req, res) => {
                 title,
                 summary,
                 content,
-                cover: newPath,
+                cover: coverPath,
                 author:info.id
             })
             res.json(postDoc)
@@ -99,4 +101,9 @@ app.get('/profile', (req, res) => {
          .sort({createdAt:-1}).limit(20))
     })
 
+app.get('/post/:id', async (req, res) => {
+    const { id } = req.params
+    postDoc = await Post.findById(id).populate('author',['username'])
+    res.json(postDoc)
+    })
 app.listen(4000)
