@@ -38,7 +38,7 @@ app.post('/register', (req, res) => {
     // res.json({requestData:{username,password}})
      res.json(userDoc)
     } catch (e) {
-        console.log(e)
+        
     res.status(400).json(e)
 }
 })
@@ -58,9 +58,19 @@ app.post('/login',async (req, res) => {
 
 app.get('/profile', (req, res) => {
     const { token } = req.cookies;
+    
+    // Check if token exists in the cookies
+    if (!token) {
+        return res.status(401).json({ error: 'No token provided' });
+    }
+     // Verify the token
     jwt.verify(token, secret, {}, (err,info) => {
-        if (err) throw err;
-        res.json(info)
+        if (err) {
+            return res.status(403).json({ error: 'Token is invalid or expired' });
+
+        }
+        // Return the decoded token information (usually user profile data)
+        res.json(info);
     })
 }) 
 
@@ -105,5 +115,35 @@ app.get('/post/:id', async (req, res) => {
     const { id } = req.params
     postDoc = await Post.findById(id).populate('author',['username'])
     res.json(postDoc)
+})
+    
+app.put('/post', uploadMiddleware.single('file'), async (req, res) => {
+    let newPath = null;
+    if (req.file) {
+        const { originalname, path } = req.file
+        const parts = originalname.split('.')
+        const ext = parts[parts.length - 1];
+        newPath = path + '.' + ext
+        fs.renameSync(path, newPath)
+    }
+    const { token } = req.cookies;
+    jwt.verify(token, secret, {}, async (err, info) => {
+        if (err) throw err;
+        const {id, title, summary, content } = req.body;
+        const postDoc = await Post.findById(id)
+        const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
+        if(!isAuthor){
+            return res.status(400).json('you are not the author')
+        }
+         // Update post fields and save the document
+         postDoc.title = title;
+         postDoc.summary = summary;
+         postDoc.content = content;
+         postDoc.cover = newPath ? newPath : postDoc.cover;
+         
+         // Save the updated document
+         await postDoc.save();
+        res.json(postDoc)
     })
+})
 app.listen(4000)

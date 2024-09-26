@@ -15,14 +15,14 @@ export default function RegisterPage() {
     
       if (response.status === 200) {
         alert("Registration success");
-    } else {
-        alert("Registration failed");
-    }
+    } 
   }catch (error) {
     // Handle any network errors or exceptions
     console.error('Error:', error);
     alert("Registration failed due to an error");
-  }
+    }
+    setUsername('')
+    setPassword('')
 }
   return (
       <form className='register' onSubmit={register}>

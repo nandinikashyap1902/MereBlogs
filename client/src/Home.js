@@ -7,7 +7,6 @@ export default function Home() {
     fetch('http://localhost:4000/post').then(res => {
       res.json().then(posts => {
         setPosts(posts)
-        console.log(posts)
       })
     })
   },[])

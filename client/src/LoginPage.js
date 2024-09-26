@@ -23,6 +23,7 @@ export default function LoginPage() {
         alert("Login successful");
         response.json().then(userInfo => {
             setUserInfo(userInfo)
+            //console.log(userInfo)
             setRedirect(true)
         })
     } else {
@@ -30,7 +31,9 @@ export default function LoginPage() {
     }
 } catch (err) {
     alert("An error occurred: " + err.message);
-}
+     }
+     setUsername('')
+     setPassword('')
 }
     if (redirect) {
         return <Navigate to={'/'} />
