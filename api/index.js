@@ -42,19 +42,50 @@ app.post('/register', (req, res) => {
     res.status(400).json(e)
 }
 })
-app.post('/login',async (req, res) => {
-    const { username, password } = req.body;
-    const userDoc = await User.findOne({ username })
-    const passOk = bcrypt.compareSync(password, userDoc.password)
-    if (passOk) {
-        jwt.sign({ username, id: userDoc._id }, secret, {}, (err,token) => {
-            if (err) throw err
-         res.cookie('token',token).json({id:userDoc._id,username})
-        })
-    } else {
-        res.status(400).json('wrong credentials')
+app.post('/login', async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        // Basic input validation
+        if (!username || !password) {
+            return res.status(400).json({ message: 'Username and password are required.' });
+        }
+
+        // Find user by username
+        const userDoc = await User.findOne({ username });
+        if (!userDoc) {
+            // Don't reveal whether it's the username or password that was incorrect
+            return res.status(400).json({ message: 'Invalid credentials.' });
+        }
+
+        // Compare password asynchronously to avoid blocking the event loop
+        const passOk = await bcrypt.compare(password, userDoc.password);
+        if (!passOk) {
+            return res.status(400).json({ message: 'Invalid credentials.' });
+        }
+
+        // Generate JWT token securely
+        jwt.sign(
+            { username, id: userDoc._id },
+            secret,// Ensure secret is stored securely in environment variables
+            { expiresIn: '1h' }, // Optional expiration time for the token
+            (err, token) => {
+                if (err) {
+                    console.error('JWT signing error:', err);
+                    return res.status(500).json({ message: 'Authentication failed. Please try again.' });
+                }
+                
+                // Send token as a cookie and response with user info
+                res.cookie('token', token, { httpOnly: true, })
+                   .json({ id: userDoc._id, username });
+            }
+        );
+    } catch (err) {
+        // Log the error and respond with a generic error message
+        console.error('Login error:', err);
+        res.status(500).json({ message: 'Internal server error. Please try again later.' });
     }
-})
+});
 
 app.get('/profile', (req, res) => {
     const { token } = req.cookies;

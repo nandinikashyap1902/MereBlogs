@@ -2,6 +2,8 @@ import React, { useContext} from 'react'
 import { Link } from 'react-router-dom'
 import { useEffect } from 'react'
 import { UserContext } from './UserContext'
+import Lottie from 'lottie-react'
+import bg from './assets/header-bg.json'
 export default function Header() {
  const {userInfo,setUserInfo} = useContext(UserContext)
   useEffect(() => {
@@ -40,6 +42,8 @@ export default function Header() {
 
         }
           
+<Lottie animationData={bg}></Lottie>
+         
         </nav>
       </header>
   )
