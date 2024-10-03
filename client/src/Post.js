@@ -2,7 +2,8 @@ import React from 'react'
 import './App.css'
 import { Link } from 'react-router-dom'
  import {formatISO9075} from 'date-fns'
-export default function Post({_id,title, summary, cover, content, createdAt,author }) {
+export default function Post({ _id, title, summary, cover, content, createdAt, author }) {
+  console.log(content)
   return (
   
     <div className="post">
@@ -17,11 +18,13 @@ export default function Post({_id,title, summary, cover, content, createdAt,auth
         <h2>{title}</h2>
       </Link>
         
-      <p className="info">
-          <a href="./" className="author">{author.username}</a>
-          <time>{formatISO9075(new Date(createdAt))}</time>
-      </p>
         <p className="summary">{summary}</p>
+
+        {/* <p className="info">
+          <a href="./" className="author">By-{author.username}</a>
+          <time>{formatISO9075(new Date(createdAt))}</time>
+      </p> */}
+        <p>{content}</p>
       </div>
   </div>
   )

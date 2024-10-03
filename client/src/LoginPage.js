@@ -3,6 +3,8 @@ import "./App.css"
 import { useState,useContext } from 'react'
 import {Navigate} from 'react-router-dom'
 import { UserContext } from './UserContext'
+import './Form.css'
+
 export default function LoginPage() {
   const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
@@ -39,11 +41,42 @@ export default function LoginPage() {
         return <Navigate to={'/'} />
 }
   return (
-      <form className='login' onSubmit={loginInfo}>
-          <h1>Login</h1>
-      <input type='text' placeholder='username' onChange={(ev) => setUsername(ev.target.value)} value={username} /> 
-      <input type='password' placeholder='password' onChange={(ev)=>setPassword(ev.target.value)} value={password} /> 
-        <button >Login</button>
+    <div className="center login" onSubmit={loginInfo}>
+    <h1>Login</h1>
+    <form>
+      <div className="inputbox">
+        <input type="text" required="required"  onChange={(ev) => setUsername(ev.target.value)} value={username}/>
+        <span>Email</span>
+      </div>
+      <div className="inputbox">
+        <input type="text" required="required" onChange={(ev)=>setPassword(ev.target.value)} value={password}/>
+        <span>Password</span>
+      </div>
+      <div class="buttons">
+  <button class="blob-btn">
+   Post
+    <span class="blob-btn__inner">
+      <span class="blob-btn__blobs">
+        <span class="blob-btn__blob"></span>
+        <span class="blob-btn__blob"></span>
+        <span class="blob-btn__blob"></span>
+        <span class="blob-btn__blob"></span>
+      </span>
+    </span>
+  </button>
+  <br/>
+
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1">
+  <defs>
+    <filter id="goo">
+      <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10"></feGaussianBlur>
+      <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 21 -7" result="goo"></feColorMatrix>
+      <feBlend in2="goo" in="SourceGraphic" result="mix"></feBlend>
+    </filter>
+  </defs>
+              </svg>
+              </div>
     </form>
+  </div>
   )
 }

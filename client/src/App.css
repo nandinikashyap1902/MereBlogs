@@ -1,8 +1,11 @@
+@import url("https://fonts.googleapis.com/css2?family=Sansita+Swashed:wght@600&display=swap");
 *{
   box-sizing: border-box;
 }
+
 body{
   color:#222;
+  font-family: sans-serif;
 }
 
 main{
@@ -13,16 +16,17 @@ main{
 header{
   display: flex;
   justify-content:space-between;
-  margin-top:20px ;
-  margin-bottom: 50px;
+  /* margin-top:20px ; */
+  /* margin-bottom: 50px; */
   align-items: center;
 }
 header a{
   text-decoration: none;
 color:inherit;
 }
-header a.logo{
+header .logo{
   font-weight: bold;
+  margin-bottom: 35px;
 }
 
 header nav{
@@ -48,16 +52,18 @@ div.post{
 }
 div.post div.texts h2{
 margin:0;
-font-size: 1.8rem;
+font-size: 18px;
+font-weight: normal;
+color:#0505A9;
 }
 
 div.post div.texts a{
   text-decoration: none;
   color:inherit
 }
-header a.logo{
+header .logo{
   font-weight: bold;
-  font-size: 1.rem;
+  font-size: 20px
 }
 
 div.post p.info{
@@ -76,12 +82,13 @@ div.post p.info a.author{
 div.post p.summary{
   margin: 10px 0;
   line-height: 1.3rem;
+  font-weight: bold;
 }
 
-form.login,form.register{
+/* form.login,form.register{
 max-width:400px;
 margin:0 auto;
-}
+} */
 
 input{
   display: block;
@@ -104,6 +111,7 @@ button{
 }
 
 form h1{
+
   text-align: center;
 }
 
