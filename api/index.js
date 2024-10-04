@@ -135,11 +135,37 @@ app.get('/profile', (req, res) => {
 
        
     })
-    app.get('/post', async (req, res) => {
+
+ // Ensure your secret is securely stored
+
+function authMiddleware(req, res, next) {
+  const token = req.cookies.token;  // Retrieve the token from the cookies
+
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized access. No token provided.' });
+  }
+
+  try {
+    // Verify and decode the token
+    const decoded = jwt.verify(token, secret); // Ensure you're using the same `secret`
+
+    // Attach user info to the request object (e.g., user ID)
+    req.user = decoded;
+    next(); // Continue to the next middleware/route handler
+  } catch (err) {
+    console.error('Token verification error:', err);
+    res.status(401).json({ message: 'Token is invalid or expired.' });
+  }
+}
+
+
+    app.get('/post',authMiddleware, async (req, res) => {
         
-        res.json(await Post.find()
+        const posts = await Post.find({ author: req.user.id })
             .populate('author', ['username'])
-         .sort({createdAt:-1}).limit(20))
+            .sort({ createdAt: -1 }).limit(20);
+       
+            res.json(posts);
     })
 
 app.get('/post/:id', async (req, res) => {

@@ -12,6 +12,7 @@ export default function Editor({value,onChange}) {
     }
     return (
         <ReactQuill
+        onChange={onChange} 
             value={value}
             theme={'snow'}
         module={modules}>

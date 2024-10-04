@@ -26,6 +26,7 @@ export default function Header() {
   const username = userInfo?.username
   return (
     <header>
+      
         <Link to="/" className="logo">MERE-BLOGS</Link>
       <nav>
         {username && (
@@ -85,6 +86,7 @@ export default function Header() {
             </Link>
           </>
         )}
+      
         {!username && (
           <>
             {/* <Link to="/login" >Login</Link> */}

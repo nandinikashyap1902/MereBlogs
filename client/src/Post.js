@@ -3,13 +3,19 @@ import './App.css'
 import { Link } from 'react-router-dom'
  import {formatISO9075} from 'date-fns'
 export default function Post({ _id, title, summary, cover, content, createdAt, author }) {
-  console.log(content)
-  return (
+  let shortContent = "";
+//   if (content.includes("<br></p>")) {
+//  shortContent= content.replace("<br></p>","")
+//   }
+   shortContent = content.toString().replaceAll("<p>","").slice(0,90)
   
+  return (
+  <>
+  <hr></hr>
     <div className="post">
       <div className="image">
         <Link to={`/post/${_id}`}>
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRn99DM-k1UQaqmx_jUB1BcE2851rFR1CLZaw&s" alt="" />
+          <img src={`http://localhost:4000/`+cover} alt="" />
           </Link>
       </div>
       
@@ -24,8 +30,9 @@ export default function Post({ _id, title, summary, cover, content, createdAt, a
           <a href="./" className="author">By-{author.username}</a>
           <time>{formatISO9075(new Date(createdAt))}</time>
       </p> */}
-        <p>{content}</p>
+        <div dangerouslySetInnerHTML={{ __html: shortContent }} />
       </div>
-  </div>
+      </div>
+      </>
   )
 }

@@ -50,8 +50,12 @@ div.post{
     grid-template-columns: .9fr 1.1fr;
   }
 }
+
+div.post div.texts{
+
+}
 div.post div.texts h2{
-margin:0;
+margin-top: 30px;
 font-size: 18px;
 font-weight: normal;
 color:#0505A9;
@@ -176,3 +180,7 @@ div.post-page a.edit-btn{
 a svg{
   height:20px;
 }
+
+ .editpost form{
+  max-width:600px
+ }

@@ -1,41 +1,75 @@
 import React, { useState } from 'react'
 import "./App.css"
 import './Form.css'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
+const validateEmail = (email) => {
+  // Basic email regex
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+};
+const validatePassword = (password) => {
+  // Basic password length check
+  return password.length >= 6;
+};
 export default function RegisterPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [emailError, setEmailError] = useState('');
+  const [passwordError, setPasswordError] = useState('');
 
   async function register(ev) {
+    // setEmailError(validateEmail(username) ? '' : 'Please enter a valid email');
+    // setPasswordError(validatePassword(password)?'':'Password must be at least 6 characters')
     ev.preventDefault();
-    try {
-      const response = await fetch('http://localhost:4000/register', {
-        method: 'POST',
-        body: JSON.stringify({ username, password }),
-        headers: { 'Content-Type': 'application/json' }
-      })
+    if (username === '' && password === '') {
+     return 'enter all details'
+    } else {
+      try {
+        const response = await fetch('http://localhost:4000/register', {
+          method: 'POST',
+          body: JSON.stringify({ username, password }),
+          headers: { 'Content-Type': 'application/json' }
+        })
+      
+        if (response.status === 200) {
+          MySwal.fire({
+            title: 'Success!',
+            text: 'Your action was successful.',
+            icon: 'success',
+            confirmButtonText: 'OK'
+           })
+      } 
+    }catch (error) {
+      // Handle any network errors or exceptions
+      MySwal.fire({
+        title: 'Failed!',
+        text: 'Your action was unsuccessful.',
+        icon: 'error',
+        confirmButtonText: 'Try Again!'
+       })
+      }
+   }
+      
     
-      if (response.status === 200) {
-        alert("Registration success");
-    } 
-  }catch (error) {
-    // Handle any network errors or exceptions
-    console.error('Error:', error);
-    alert("Registration failed due to an error");
-    }
+    
     setUsername('')
     setPassword('')
 }
   return (
-    <div className="center" onSubmit={register}>
+    <div className="center register" onSubmit={register}>
     <h1>Register</h1>
     <form>
       <div className="inputbox">
-        <input type="text" required="required"  onChange={(ev) => setUsername(ev.target.value)} value={username}/>
-        <span>Email</span>
+        <input type="email" required="required" onChange={(ev) => setUsername(ev.target.value)} value={username}/>
+          <span>Email</span>
+          {emailError && <span className="error">{emailError}</span>}
       </div>
       <div className="inputbox">
-        <input type="text" required="required"onChange={(ev)=>setPassword(ev.target.value)} value={password}/>
-        <span>Password</span>
+        <input type="password" required="required"onChange={(ev)=>setPassword(ev.target.value)} value={password} min={5}/>
+          <span>Password</span>
+          {passwordError && <span className="error">{passwordError}</span>}
+
       </div>
       <div class="buttons">
   <button class="blob-btn">

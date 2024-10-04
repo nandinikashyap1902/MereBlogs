@@ -3,7 +3,7 @@ import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import { Navigate } from 'react-router-dom'
 import Editor from './Editor'
-
+import './App.css'
 export default function CreatePost() {
     const[title,setTitle] = useState('')
     const[summary,setSummary] = useState('')
@@ -23,23 +23,25 @@ export default function CreatePost() {
         data.set('summary',summary)
         data.set('content',content)
         data.set('file',files[0])
-        ev.preventDefault()
-    // const response=  await fetch('http://localhost:4000/post', {
-    //         method: 'POST',
-    //   body: data,
-    //         credentials:'include'
-    //     })
-    //  if (response.ok) {
-    // setRedirect(true)
-    //  }
-     console.log(content)
+     ev.preventDefault()
+     
+    const response=  await fetch('http://localhost:4000/post', {
+            method: 'POST',
+      body: data,
+            credentials:'include'
+        })
+     if (response.ok) {
+    setRedirect(true)
+     }
+     
   }
   if (redirect) {
    return  <Navigate to={'/'} />
   }
-  return (
-    <div className="center post" onSubmit={createNewPost} enctype="multipart/form-data">
-    <form>
+  return (<>
+
+    <div className="center editpost" >
+    <form onSubmit={createNewPost} encType="multipart/form-data">
       <div className="inputbox">
         <input type="text"   value={title}
               onChange={ev=>setTitle(ev.target.value)}/>
@@ -54,7 +56,7 @@ export default function CreatePost() {
             <span>file</span>
         </div>
         
-        <Editor value={content} onChange={(content) => setContent(content)} />
+        <Editor value={content} onChange={setContent} />
             
       <div class="buttons">
   <button class="blob-btn">
@@ -81,6 +83,7 @@ export default function CreatePost() {
               </svg>
               </div>
     </form>
-  </div>
+    </div>
+    </>
   )
 }

@@ -4,14 +4,26 @@ import { useState,useContext } from 'react'
 import {Navigate} from 'react-router-dom'
 import { UserContext } from './UserContext'
 import './Form.css'
-
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
 export default function LoginPage() {
   const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [redirect, setRedirect] = useState(false)
     const {setUserInfo} = useContext(UserContext)
- async function loginInfo(ev) {
+  async function loginInfo(ev) {
+    // console.log(username,password)
+    // if (username==='' && password==='') {
+    //   return  MySwal.fire({
+    //    title: 'failed!',
+    //    text: 'Your action was unsuccessful.',
+    //    icon: 'error',
+    //    confirmButtonText: 'Try again!'
+    //   })
+    // }
    ev.preventDefault();
+   
    try {
     const response = await fetch('http://localhost:4000/login', {
         method: 'POST',
@@ -22,20 +34,31 @@ export default function LoginPage() {
     
     // Check if the login was successful
     if (response.ok) {
-        alert("Login successful");
+      MySwal.fire({
+        title: 'Success!',
+        text: 'Your action was successful.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+       })
         response.json().then(userInfo => {
             setUserInfo(userInfo)
             //console.log(userInfo)
             setRedirect(true)
         })
     } else {
-        alert("Login failed");
+      MySwal.fire({
+        title: 'login failed!',
+        text: 'Your action was unsuccessful.',
+        icon: 'error',
+        confirmButtonText: 'Try Again!'
+       })
     }
 } catch (err) {
     alert("An error occurred: " + err.message);
      }
      setUsername('')
-     setPassword('')
+   setPassword('')
+   
 }
     if (redirect) {
         return <Navigate to={'/'} />
@@ -49,7 +72,7 @@ export default function LoginPage() {
         <span>Email</span>
       </div>
       <div className="inputbox">
-        <input type="text" required="required" onChange={(ev)=>setPassword(ev.target.value)} value={password}/>
+        <input type="password" required="required" onChange={(ev)=>setPassword(ev.target.value)} value={password}/>
         <span>Password</span>
       </div>
       <div class="buttons">

@@ -15,7 +15,7 @@
   background: #fff;
   border-radius: 10px;
   height: 100%;
-  max-width:400px;
+  max-width:600px;
 margin:0 auto;
 }
 .center h1 {
@@ -30,7 +30,7 @@ margin:0 auto;
 }
 .center .inputbox {
   position: relative;
-  width: 300px;
+  width: 500px;
   height: 50px;
   margin-bottom: 50px;
 }
