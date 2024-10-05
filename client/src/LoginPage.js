@@ -61,7 +61,7 @@ export default function LoginPage() {
    
 }
     if (redirect) {
-        return <Navigate to={'/'} />
+        return <Navigate to={'/posts'} />
 }
   return (
     <div className="center login" onSubmit={loginInfo}>

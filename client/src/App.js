@@ -15,14 +15,15 @@ function App() {
   return (
     <UserContextProvider>
     <Routes>
-      {/* <Route path="/" element={<Layout/>}>
-      <Route index element={<Home/>}/> */}
+       <Route path="/" element={<Layout/>}/>
+        <Route index element={<Background/>}/>  
         <Route path='/login' element={<LoginPage/>} />
           <Route path='/register' element={<RegisterPage />} />
           <Route path="/create" element={<CreatePost />} />
           <Route path="/post/:id" element={<PostPage />} />
-          <Route path='/edit/:id' element={<EditPost />} />
-          <Route path="/bg" element={<Background/>} />
+        <Route path='/edit/:id' element={<EditPost />} />
+        <Route path='/posts' element={<Home/>}/>
+          {/* <Route path="/bg" element={<Background/>} /> */}
  
     </Routes>
     </UserContextProvider>
