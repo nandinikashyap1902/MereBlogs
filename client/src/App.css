@@ -6,6 +6,7 @@
 body{
   color:#222;
   font-family: sans-serif;
+ 
 }
 
 main{
@@ -104,7 +105,7 @@ input{
  border-radius: 5px;
 }
 
-button{
+/* button{
   width:100%;
   display:block;
   background-color: #555;
@@ -112,7 +113,7 @@ button{
   color: #fff;
   border-radius: 5px;
   padding:5px 0;
-}
+} */
 
 form h1{
 

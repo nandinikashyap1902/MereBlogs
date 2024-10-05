@@ -203,4 +203,46 @@ app.put('/post', uploadMiddleware.single('file'), async (req, res) => {
         res.json(postDoc)
     })
 })
+function verifyToken(req, res, next) {
+    const token = req.headers['Authorization']?.split(' ')[1]; // Expecting `Bearer <token>`
+
+    if (!token) {
+        return res.status(403).json({ message: 'No token provided' });
+    }
+
+    jwt.verify(token, secret, (err, decoded) => {
+        if (err) {
+            return res.status(403).json({ message: 'Invalid token' });
+        }
+
+        req.user = decoded; // Assuming the decoded token contains the user's id
+        console.log(decoded)
+        next();
+    });
+}
+app.delete('/post/:id',verifyToken,  async (req, res) => { 
+    try {
+        const postId = req.params.id;
+        const userId = req.user.id; // Assuming req.user is populated from verifyToken middleware
+
+        // Find the post by ID
+        const post = await Post.findById(postId);
+
+        if (!post) {
+            return res.status(404).json({ message: 'Post not found' });
+        }
+
+        // Check if the post author matches the logged-in user
+        if (post.author.toString() !== userId) {
+            return res.status(403).json({ message: 'Unauthorized to delete this post' });
+        }
+
+        // Delete the post
+        await Post.findByIdAndDelete(postId);
+
+        res.status(200).json({ message: 'Post deleted successfully' });
+    } catch (err) {
+        res.status(500).json({ message: 'Server error', error: err.message });
+    }
+})
 app.listen(4000)

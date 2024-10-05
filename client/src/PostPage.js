@@ -16,7 +16,24 @@ export function PostPage() {
         })
     },[] )
     if (!postInfo) return ''
-    
+  async  function deletePost() {
+    const confirmDelete = window.confirm("Are you sure you want to delete this post?");
+    if (confirmDelete) {
+        const response = await fetch(`http://localhost:4000/post/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${userInfo.token}`, // Assuming token-based authentication
+            },
+        });
+
+        if (response.ok) {
+           alert('deleted succesfully') // Redirect to homepage or another route after deletion
+        } else {
+            alert('Failed to delete the post');
+        }
+    }
+    }
     return (
         <div className="post-page">
             <h1>{postInfo.title}</h1>
@@ -34,7 +51,10 @@ export function PostPage() {
                                 Edit this post</Link>
                            </div> 
                         
-)}
+                    )}
+                    
+                        <button onClick={deletePost}>Delete</button>
+                    
                 <img src={`http://localhost:4000/${postInfo.cover}`} alt=""/>
                 </div>
             </div>

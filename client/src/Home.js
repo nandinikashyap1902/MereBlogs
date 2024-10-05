@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Post from './Post'
-
+import background from './assets/background.json'
+import Lottie from 'lottie-react';
 export default function Home() {
   const [posts,setPosts] = useState([])
   useEffect(() => {
@@ -15,7 +16,7 @@ export default function Home() {
   },[])
   return (
     <>
-      
+      {/* <Lottie animationData={background}></Lottie> */}
       {posts.length > 0 && posts.map(post => {
       return  <Post {...post} />
          })}

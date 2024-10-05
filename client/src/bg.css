@@ -1,0 +1,58 @@
+body{
+    margin:0;
+    
+}
+.bg-box {
+   max-height:800px;
+   height:100vh;
+  }
+  
+  .lottie-animation {
+      display:flex;
+      overflow: hidden;
+      object-fit: cover;
+        object-position: center;
+        width:100%;
+    max-height:300px;
+  }
+  
+  .laptopMan{
+    display:flex;
+  }
+  .text{
+    margin-top:20px;
+  }
+.man{
+    display:flex;
+   max-width:500px;
+}
+.mobileman{
+    display:flex;
+   max-width:500px;
+   margin-left: auto;
+}
+.post-container{
+    display:flex;
+}
+.post-container button{
+    display:inline;
+    height:40px;
+    width:400px;
+    padding:0px;
+    margin-top:100px;
+    max-width:200px;
+}
+.arrow{
+   max-width:400px;
+}
+/* footer{
+    max-height:300px;
+} */
+.footerAni{
+    display:flex;
+    overflow: hidden;
+    object-fit: cover;
+      object-position: center;
+      width:100%;
+  max-height:300px;
+}
