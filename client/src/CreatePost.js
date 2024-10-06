@@ -4,6 +4,7 @@ import 'react-quill/dist/quill.snow.css'
 import { Navigate } from 'react-router-dom'
 import Editor from './Editor'
 import './App.css'
+import './Form.css'
 export default function CreatePost() {
     const[title,setTitle] = useState('')
     const[summary,setSummary] = useState('')
@@ -40,7 +41,8 @@ export default function CreatePost() {
   }
   return (<>
 
-    <div className="center editpost" >
+    <div className="center createpost" >
+      <h1>CREATE A NEW POST</h1>
     <form onSubmit={createNewPost} encType="multipart/form-data">
       <div className="inputbox">
         <input type="text"   value={title}
@@ -48,7 +50,7 @@ export default function CreatePost() {
         <span>title</span>
       </div>
       <div className="inputbox">
-        <input type="summary" value={summary} onChange={ev => setSummary(ev.target.value)}/>
+        <input type="text" value={summary} onChange={ev => setSummary(ev.target.value)}/>
         <span>summary</span>
         </div>
         <div className="inputbox">

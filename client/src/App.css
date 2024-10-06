@@ -46,7 +46,7 @@ div.post{
   margin-bottom:30px  ;
 }
 
-@media screen and (min-width: 700px){
+@media screen and (min-width: 750px){
   div.post{
     grid-template-columns: .9fr 1.1fr;
   }
@@ -80,6 +80,10 @@ div.post p.info{
   gap:10px;
 }
 
+/* div.post .image img{
+  max-width:200px;
+  width:50%;
+} */
 div.post p.info a.author{
   color:#333;
 }

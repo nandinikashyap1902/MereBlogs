@@ -103,6 +103,6 @@ body{
 .typing-text {
   overflow: hidden; /* Hide any overflowing characters */
   white-space: nowrap; /* Keep text on a single line */
-  animation: type 4s steps(40, end); /* Animation with 20 steps */
+  animation: type 4s steps(45, end); /* Animation with 20 steps */
  animation-iteration-count: infinite;
 }

@@ -101,7 +101,8 @@ export default function LoginPage() {
   </defs>
               </svg>
               </div>
-    </form>
+      </form>
+      
   </div>
   )
 }
