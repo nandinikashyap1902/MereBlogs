@@ -11,7 +11,7 @@ export default function LoginPage() {
   const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [redirect, setRedirect] = useState(false)
-    const {setUserInfo} = useContext(UserContext)
+    const {userInfo,setUserInfo} = useContext(UserContext)
   async function loginInfo(ev) {
     // console.log(username,password)
     // if (username==='' && password==='') {
@@ -34,17 +34,18 @@ export default function LoginPage() {
     
     // Check if the login was successful
     if (response.ok) {
-      MySwal.fire({
-        title: 'Success!',
-        text: 'Your action was successful.',
-        icon: 'success',
-        confirmButtonText: 'OK'
-       })
+      
         response.json().then(userInfo => {
             setUserInfo(userInfo)
-            //console.log(userInfo)
+            // console.log(userInfo)
             setRedirect(true)
         })
+        MySwal.fire({
+          title: 'Success!',
+          text: 'Your action was successful.',
+          icon: 'success',
+          confirmButtonText: 'OK'
+         })
     } else {
       MySwal.fire({
         title: 'login failed!',
@@ -62,7 +63,8 @@ export default function LoginPage() {
 }
     if (redirect) {
         return <Navigate to={'/posts'} />
-}
+  }
+  // console.log(userInfo)
   return (
     <div className="center login" onSubmit={loginInfo}>
     <h1>Login</h1>

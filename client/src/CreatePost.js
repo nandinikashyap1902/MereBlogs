@@ -36,7 +36,7 @@ export default function CreatePost() {
      
   }
   if (redirect) {
-   return  <Navigate to={'/'} />
+   return  <Navigate to={'/posts'} />
   }
   return (<>
 

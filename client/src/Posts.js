@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import Post from './Post'
 import background from './assets/background.json'
 import Lottie from 'lottie-react';
-export default function Home() {
+import Layout from './Layout';
+export default function Posts() {
   const [posts,setPosts] = useState([])
   useEffect(() => {
     fetch(`http://localhost:4000/post`, {
@@ -17,6 +18,7 @@ export default function Home() {
   return (
     <>
       {/* <Lottie animationData={background}></Lottie> */}
+      <Layout></Layout>
       {posts.length > 0 && posts.map(post => {
       return  <Post {...post} />
          })}

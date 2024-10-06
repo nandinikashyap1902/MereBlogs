@@ -12,7 +12,7 @@ export default function Header() {
       credentials:'include'
     }).then(res => {
       res.json().then(userInfo => {
-        setUserInfo(userInfo.username)
+        setUserInfo(userInfo)
       })
     })
   }, [])
@@ -32,7 +32,8 @@ export default function Header() {
         {username && (
           <>
             <Link to="/create">
-            <div class="buttons">
+              <div class="buttons">
+                {/* <avatar>Hiii{username}</avatar> */}
   <button class="blob-btn">
    Post
     <span class="blob-btn__inner">

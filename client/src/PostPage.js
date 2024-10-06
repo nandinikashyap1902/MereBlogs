@@ -1,17 +1,18 @@
 import { useState,useEffect,useContext } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, Navigate, useParams } from "react-router-dom"
 import './App.css'
 import { formatISO9075 } from "date-fns"
 import { UserContext } from "./UserContext"
 export function PostPage() {
     const [postInfo, setPostInfo] = useState(null)
+    const [redirect, setRedirect] = useState(false)
     const { id } = useParams()
     const { userInfo } = useContext(UserContext)
     useEffect(() => {
         fetch(`http://localhost:4000/post/${id}`)
             .then(res => {
-                res.json().then(postInfo => {
-                setPostInfo(postInfo)
+                res.json().then(postinfo => {
+                setPostInfo(postinfo)
             })
         })
     },[] )
@@ -22,17 +23,23 @@ export function PostPage() {
         const response = await fetch(`http://localhost:4000/post/${id}`, {
             method: 'DELETE',
             headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${userInfo.token}`, // Assuming token-based authentication
-            },
+                'Content-Type': 'application/json'
+              },
+              credentials: 'include' 
         });
-
         if (response.ok) {
            alert('deleted succesfully') // Redirect to homepage or another route after deletion
         } else {
             alert('Failed to delete the post');
         }
+        setRedirect(true)
+}
     }
+   
+    if (redirect) {
+        return (
+            <Navigate to="/posts" />
+        )
     }
     return (
         <div className="post-page">

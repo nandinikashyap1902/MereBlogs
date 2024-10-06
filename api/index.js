@@ -203,46 +203,40 @@ app.put('/post', uploadMiddleware.single('file'), async (req, res) => {
         res.json(postDoc)
     })
 })
-function verifyToken(req, res, next) {
-    const token = req.headers['Authorization']?.split(' ')[1]; // Expecting `Bearer <token>`
-
-    if (!token) {
-        return res.status(403).json({ message: 'No token provided' });
-    }
-
-    jwt.verify(token, secret, (err, decoded) => {
-        if (err) {
-            return res.status(403).json({ message: 'Invalid token' });
-        }
-
-        req.user = decoded; // Assuming the decoded token contains the user's id
-        console.log(decoded)
-        next();
-    });
-}
-app.delete('/post/:id',verifyToken,  async (req, res) => { 
+// function authenticateToken(req, res, next) {
+//     const  token  = req.cookies.token;
+// console.log(token)
+//     if (!token) return res.status(401).json({ message: 'Token is required' });
+    
+//     jwt.verify(token, secret, (err, user) => {
+//         if (err) return res.status(403).json({ message: 'Invalid token' });
+//         req.user = user;
+//         next();
+//     });
+// }
+app.delete('/post/:id', authMiddleware,async (req, res) => { 
     try {
-        const postId = req.params.id;
-        const userId = req.user.id; // Assuming req.user is populated from verifyToken middleware
-
+        const { id } = req.params; // Get post ID from URL params
+console.log('id:',id)
         // Find the post by ID
-        const post = await Post.findById(postId);
+        const postDoc = await Post.findById(id);
 
-        if (!post) {
-            return res.status(404).json({ message: 'Post not found' });
+        if (!postDoc) {
+            return res.status(404).json({ message: 'Post not found.' });
         }
 
-        // Check if the post author matches the logged-in user
-        if (post.author.toString() !== userId) {
-            return res.status(403).json({ message: 'Unauthorized to delete this post' });
+        // Check if the authenticated user is the author of the post
+        if (postDoc.author.toString() !== req.user.id) {
+            return res.status(403).json({ message: 'Forbidden: You are not allowed to delete this post.' });
         }
 
-        // Delete the post
-        await Post.findByIdAndDelete(postId);
+        // If everything is good, delete the post
+        await Post.findByIdAndDelete(id);
 
-        res.status(200).json({ message: 'Post deleted successfully' });
+        return res.status(200).json({ message: 'Post deleted successfully.' });
     } catch (err) {
-        res.status(500).json({ message: 'Server error', error: err.message });
+        console.error('Error deleting post:', err);
+        res.status(500).json({ message: 'Internal server error. Please try again later.' });
     }
 })
 app.listen(4000)
