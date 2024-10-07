@@ -80,3 +80,7 @@ margin:0 auto;
   font-size: 1.2em;
   outline: none;
 }
+.btn{
+  margin-top: 20px;
+  margin-left: 0;
+}

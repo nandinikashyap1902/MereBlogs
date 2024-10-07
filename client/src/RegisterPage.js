@@ -3,6 +3,7 @@ import "./App.css"
 import './Form.css'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { Navigate } from 'react-router-dom'
 const MySwal = withReactContent(Swal)
 const validateEmail = (email) => {
   // Basic email regex
@@ -17,7 +18,7 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [emailError, setEmailError] = useState('');
   const [passwordError, setPasswordError] = useState('');
-
+  const [redirect, setRedirect] = useState(false)
   async function register(ev) {
     // setEmailError(validateEmail(username) ? '' : 'Please enter a valid email');
     // setPasswordError(validatePassword(password)?'':'Password must be at least 6 characters')
@@ -38,7 +39,9 @@ export default function RegisterPage() {
             text: 'Your action was successful.',
             icon: 'success',
             confirmButtonText: 'OK'
-           })
+          })
+          setRedirect(true)
+          
       } 
     }catch (error) {
       // Handle any network errors or exceptions
@@ -55,6 +58,11 @@ export default function RegisterPage() {
     
     setUsername('')
     setPassword('')
+    if (redirect) {
+      return (
+          <Navigate to="/" />
+      )
+  }
 }
   return (
     <div className="center register" onSubmit={register}>

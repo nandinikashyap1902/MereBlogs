@@ -60,7 +60,7 @@ export default function CreatePost() {
         
         <Editor value={content} onChange={setContent} />
             
-      <div class="buttons">
+      <div class="buttons btn">
   <button class="blob-btn">
    Post
     <span class="blob-btn__inner">
