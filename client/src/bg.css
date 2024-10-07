@@ -16,21 +16,18 @@ body{
     max-height:300px;
   }
   
-  .laptopMan{
+  /* .laptopMan{
     display:flex;
-  }
+  } */
   .text{
     margin-top:20px;
   }
-.man{
-    display:flex;
-   max-width:500px;
-}
-.mobileman{
+
+/* .mobileMan{
     display:flex;
    max-width:500px;
    margin-left: auto;
-}
+} */
 .post-container{
     display:flex;
 }
@@ -83,10 +80,10 @@ body{
   /* left: 0; */
 }
 
-.man2{
+/* .man2{
   margin-left:20px;
   margin-top: 20px;
-}
+} */
 
 /* .mobileman{
   margin-top: 20px;
@@ -106,3 +103,58 @@ body{
   animation: type 4s steps(45, end); /* Animation with 20 steps */
  animation-iteration-count: infinite;
 }
+/* .Back-laptopMan{
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:20px;
+}
+.laptopman{
+  display: flex;
+  max-width: 500px;
+}
+.Back-MobileMan{
+  display:flex;
+}
+.mobileman{
+  display:flex;
+ max-width:500px;
+} */
+
+/* body {
+  margin: 0;
+} */
+
+/* .bg-container{
+  display:flex;
+  align-items: center;
+} */
+.laptopman, .mobileman {
+  width: 100%; /* Make Lottie animation responsive */
+  max-width: 300px; /* Limit max width for larger screens */
+  height: auto; /* Maintain aspect ratio */
+ 
+}
+.Back-laptopMan, .Back-MobileMan{
+  display: grid;
+  grid-template-columns: 1fr; /* Default to a single column */
+  gap: 10px; /* Space between grid items */
+  padding: 20px; /* Padding around the grid */
+  justify-content: center;
+}
+@media (min-width: 768px) {
+  .Back-laptopMan,.Back-MobileMan {
+      grid-template-columns:.9fr 1.0fr;
+  }
+
+  .Back-laptopMan,
+  .Back-MobileMan {
+      flex-direction: row; /* Change to row layout on small screens */
+      justify-content: center; /* Center items in a row */
+      align-items: center;
+  }
+}
+/* @media screen and (min-width: 750px){
+  .Back-laptopMan{
+    
+  }
+} */
