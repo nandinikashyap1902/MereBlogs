@@ -13,7 +13,7 @@ A full-stack blog application built using **MERN** (MongoDB, Express, React, Nod
 ## Screenshots
 
 ### Homepage
-![MereBlogs screenshot](./src/assets/Home.png)
+![MereBlogs screenshot](./client/src/assets/Home.png)
 
 ### Login Page
 ![Login Page](./assets/Login.png)
