@@ -13,12 +13,10 @@ const fs = require('fs')
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 app.use('/uploads',express.static(__dirname + '/uploads'))
-app.use(cors({credentials:true,origin:'http://localhost:3000'}))
+app.use(cors({credentials:true,origin:['http://localhost:3000','https://mereblogs1.netlify.app/']}))
 app.use(express.json())
 const Post = require('./models/Post')
 mongoose.connect(mongoURI, {
-    useNewUrlParser: true,
-  useUnifiedTopology: true,
 }).then(() => {
     console.log('MongoDB connection established successfully.');
 })
