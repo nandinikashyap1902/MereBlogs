@@ -40,7 +40,6 @@ A full-stack blog application built using **MERN** (MongoDB, Express, React, Nod
 - **BCrypt.js** (for password hashing)
 
 ## Setup Instructions
-
 ### Prerequisites
 Ensure that you have the following installed on your machine:
 - **Node.js** 
