@@ -46,7 +46,7 @@ function Background() {
         </div>
        </div>
           <footer >
-              <Lottie  id="footer" animationData={background}></Lottie>
+              <Lottie  id="footer" animationData={footerAnimation}></Lottie>
           </footer>
     
         </>
