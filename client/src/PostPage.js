@@ -35,7 +35,6 @@ export function PostPage() {
         setRedirect(true)
 }
     }
-   
     if (redirect) {
         return (
             <Navigate to="/posts" />

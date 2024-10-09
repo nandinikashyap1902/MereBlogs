@@ -12,7 +12,6 @@ const uploadMiddleware = multer({dest:'uploads/'})
 const fs = require('fs')
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
-
 app.use('/uploads',express.static(__dirname + '/uploads'))
 app.use(cors({credentials:true,origin:'http://localhost:3000'}))
 app.use(express.json())
