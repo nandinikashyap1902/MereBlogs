@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors')
 const app = express();
-
+const mongoURI="mongodb+srv://NKashyap23:<db_password>@cluster0.mxgfz.mongodb.net/"
 const mongoose = require("mongoose")
 const User = require('./models/User')
 const bcrypt = require('bcrypt')
@@ -17,7 +17,9 @@ app.use('/uploads',express.static(__dirname + '/uploads'))
 app.use(cors({credentials:true,origin:'http://localhost:3000'}))
 app.use(express.json())
 const Post = require('./models/Post')
-mongoose.connect("mongodb://localhost:27017/User",{
+mongoose.connect(mongoURI, {
+    useNewUrlParser: true,
+  useUnifiedTopology: true,
 }).then(() => {
     console.log('MongoDB connection established successfully.');
 })
