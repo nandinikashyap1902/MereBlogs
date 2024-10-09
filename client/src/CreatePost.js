@@ -5,6 +5,7 @@ import { Navigate } from 'react-router-dom'
 import Editor from './Editor'
 import './App.css'
 import './Form.css'
+
 export default function CreatePost() {
     const[title,setTitle] = useState('')
     const[summary,setSummary] = useState('')
@@ -26,7 +27,7 @@ export default function CreatePost() {
         data.set('file',files[0])
      ev.preventDefault()
      
-    const response=  await fetch('http://localhost:4000/post', {
+    const response=  await fetch(`${process.env.apiUrl}/post`, {
             method: 'POST',
       body: data,
             credentials:'include'

@@ -9,7 +9,7 @@ export function PostPage() {
     const { id } = useParams()
     const { userInfo } = useContext(UserContext)
     useEffect(() => {
-        fetch(`http://localhost:4000/post/${id}`)
+        fetch(`${process.env.apiUrl}/${id}`)
             .then(res => {
                 res.json().then(postinfo => {
                 setPostInfo(postinfo)
@@ -20,7 +20,7 @@ export function PostPage() {
   async  function deletePost() {
     const confirmDelete = window.confirm("Are you sure you want to delete this post?");
     if (confirmDelete) {
-        const response = await fetch(`http://localhost:4000/post/${id}`, {
+        const response = await fetch(`${process.env.apiUrl}/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'

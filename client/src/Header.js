@@ -8,7 +8,7 @@ import './Button.scss'
 export default function Header() {
  const {userInfo,setUserInfo} = useContext(UserContext)
   useEffect(() => {
-    fetch('http://localhost:4000/profile', {
+    fetch(`${process.env.apiUrl}/profile`, {
       credentials:'include'
     }).then(res => {
       res.json().then(userInfo => {
@@ -17,7 +17,7 @@ export default function Header() {
     })
   }, [])
   function logout() {
-    fetch('http://localhost:4000/logout', {
+    fetch(`${process.env.apiUrl}/logout`, {
       credentials: 'include',
       method:'POST'
     })
