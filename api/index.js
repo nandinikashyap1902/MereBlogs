@@ -16,7 +16,7 @@ app.use('/uploads',express.static(__dirname + '/uploads'))
 app.use(cors({credentials:true,origin:['http://localhost:3000','https://mereblogs1.netlify.app/']}))
 app.use(express.json())
 const Post = require('./models/Post')
-const axios = require('axios');
+// const axios = require('axios');
 
 // Function to fetch and log the public IP
 async function logPublicIP() {
