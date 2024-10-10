@@ -16,6 +16,21 @@ app.use('/uploads',express.static(__dirname + '/uploads'))
 app.use(cors({credentials:true,origin:['http://localhost:3000','https://mereblogs1.netlify.app/']}))
 app.use(express.json())
 const Post = require('./models/Post')
+const axios = require('axios');
+
+// Function to fetch and log the public IP
+async function logPublicIP() {
+    try {
+        const response = await fetch('https://api.ipify.org?format=json');
+        console.log('Render Public IP Address:', response.data.ip);
+    } catch (error) {
+        console.error('Error fetching public IP:', error);
+    }
+}
+
+// Call the function
+logPublicIP();
+
 mongoose.connect(mongoURI, {
 }).then(() => {
     console.log('MongoDB connection established successfully.');
