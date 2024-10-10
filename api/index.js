@@ -23,7 +23,6 @@ mongoose.connect(mongoURI, {
 .catch((error) => {
     console.error('MongoDB connection failed:', error);
 });
-
 app.post('/register', (req, res) => {
     const { username, password } = req.body
     try {
