@@ -12,7 +12,7 @@ export default function EditPost() {
     const [files, setFiles] = useState('')
     const [redirect,setRedirect] = useState(false)
     useEffect(() => {
-        fetch(`${process.env.apiUrl}/post/` + id).then(res => {
+        fetch(`${process.env.REACT_APP_API_URL}/post/` + id).then(res => {
           
             res.json().then(postInfo => {
                 console.log(postInfo)
@@ -34,7 +34,7 @@ export default function EditPost() {
         if (files?.[0]) {
             data.set('file', files?.[0])
         }
-    const response=  await fetch(`${process.env.apiUrl}/post`, {
+    const response=  await fetch(`${process.env.REACT_APP_API_URL}/post`, {
           method: 'PUT',
         body: data,
           credentials:'include'

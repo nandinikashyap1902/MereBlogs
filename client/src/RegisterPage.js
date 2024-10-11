@@ -28,11 +28,12 @@ export default function RegisterPage() {
     } else {
       try {
         const response = await fetch(`${process.env.REACT_APP_API_URL}/register`, {
+         
           method: 'POST',
           body: JSON.stringify({ username, password }),
           headers: { 'Content-Type': 'application/json' }
         })
-      
+        console.log(process.env.REACT_APP_API_URL)
         if (response.status === 200) {
           MySwal.fire({
             title: 'Success!',

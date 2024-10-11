@@ -27,7 +27,7 @@ export default function CreatePost() {
         data.set('file',files[0])
      ev.preventDefault()
      
-    const response=  await fetch(`${process.env.apiUrl}/post`, {
+    const response=  await fetch(`${process.env.REACT_APP_API_URL}/post`, {
             method: 'POST',
       body: data,
             credentials:'include'

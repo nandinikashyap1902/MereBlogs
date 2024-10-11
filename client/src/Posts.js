@@ -6,7 +6,7 @@ import Layout from './Layout';
 export default function Posts() {
   const [posts,setPosts] = useState([])
   useEffect(() => {
-    fetch(`${process.env.apiUrl}/post`, {
+    fetch(`${process.env.REACT_APP_API_URL}/post`, {
       method: 'GET',
       credentials: 'include',
     }).then(res => {
