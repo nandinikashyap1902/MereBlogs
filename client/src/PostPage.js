@@ -15,7 +15,7 @@ export function PostPage() {
                 setPostInfo(postinfo)
             })
         })
-    },[] )
+    },[id] )
     if (!postInfo) return ''
   async  function deletePost() {
     const confirmDelete = window.confirm("Are you sure you want to delete this post?");

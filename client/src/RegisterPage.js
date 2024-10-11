@@ -16,8 +16,8 @@ const MySwal = withReactContent(Swal)
 export default function RegisterPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
+  // const [emailError, setEmailError] = useState('');
+  // const [passwordError, setPasswordError] = useState('');
   const [redirect, setRedirect] = useState(false)
   async function register(ev) {
     // setEmailError(validateEmail(username) ? '' : 'Please enter a valid email');
@@ -73,13 +73,12 @@ export default function RegisterPage() {
       <div className="inputbox">
         <input type="email" required="required" onChange={(ev) => setUsername(ev.target.value)} value={username}/>
           <span>Email</span>
-          {emailError && <span className="error">{emailError}</span>}
+          
       </div>
       <div className="inputbox">
         <input type="password" required="required"onChange={(ev)=>setPassword(ev.target.value)} value={password} min={5}/>
           <span>Password</span>
-          {passwordError && <span className="error">{passwordError}</span>}
-
+        
       </div>
       <div class="buttons">
   <button class="blob-btn">

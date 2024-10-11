@@ -13,7 +13,7 @@ function App() {
   return (
     <UserContextProvider>
       <Routes>
-      {/* <Route path="/" element={<Layout/>}/> */}
+     
 
         <Route index element={<Background />} />
         <Route path='/login' element={<LoginPage />} />

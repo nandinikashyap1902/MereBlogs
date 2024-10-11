@@ -22,7 +22,7 @@ export default function EditPost() {
         })
             
         
-    },[])
+    },[id])
   async  function updatePost(ev) {
         ev.preventDefault();
         const data = new FormData()

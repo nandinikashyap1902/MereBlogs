@@ -12,12 +12,12 @@ export default function CreatePost() {
   const [files, setFiles] = useState('')
   const [redirect,setRedirect] = useState(false)
   
-   const formats = [
-        'header',
-        'bold', 'italic', 'underline', 'strike', 'blockquote',
-        'list', 'bullet', 'indent',
-        'link', 'image'
-    ]
+  //  const formats = [
+  //       'header',
+  //       'bold', 'italic', 'underline', 'strike', 'blockquote',
+  //       'list', 'bullet', 'indent',
+  //       'link', 'image'
+  //   ]
    async function createNewPost(ev) {
         const data = new FormData();
         data.set('title',title)
