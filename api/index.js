@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors')
  const app = express(); 
-const mongoURI="mongodb://nandinikashyap:Nandini@cluster0.mxgfz.mongodb.net/myDatabase?retryWrites=true&w=majority&appName=Cluster0"
+const mongoURI="mongodb+srv://nandinikashyap:cmR4Xn6Rw9U6HcV0@cluster0.mxgfz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 const mongoose = require("mongoose")
 const User = require('./models/User')
 const bcrypt = require('bcrypt')
@@ -19,17 +19,17 @@ const Post = require('./models/Post')
 // const axios = require('axios');
 
 // Function to fetch and log the public IP
-async function logPublicIP() {
-    try {
-        const response = await fetch('https://api.ipify.org?format=json');
-        console.log('Render Public IP Address:', response.data.ip);
-    } catch (error) {
-        console.error('Error fetching public IP:', error);
-    }
-}
+// async function logPublicIP() {
+//     try {
+//         const response = await fetch('https://api.ipify.org?format=json');
+//         console.log('Render Public IP Address:', response.data.ip);
+//     } catch (error) {
+//         console.error('Error fetching public IP:', error);
+//     }
+// }
 
-// Call the function
-logPublicIP();
+// // Call the function
+// logPublicIP();
 
 mongoose.connect(mongoURI, {
 }).then(() => {
