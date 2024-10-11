@@ -27,7 +27,7 @@ export default function RegisterPage() {
      return 'enter all details'
     } else {
       try {
-        const response = await fetch(`${process.env.apiUrl}/register`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/register`, {
           method: 'POST',
           body: JSON.stringify({ username, password }),
           headers: { 'Content-Type': 'application/json' }
