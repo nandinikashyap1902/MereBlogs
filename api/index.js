@@ -13,7 +13,7 @@ const fs = require('fs')
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 app.use('/uploads',express.static(__dirname + '/uploads'))
-app.use(cors({credentials:true,origin:['http://localhost:3000','https://mereblogs1.netlify.app/']}))
+app.use(cors({credentials:true,origin:['http://localhost:3000','https://mereblogs.netlify.app/']}))
 app.use(express.json())
 const Post = require('./models/Post')
 // const axios = require('axios');
