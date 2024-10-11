@@ -12,8 +12,15 @@ const uploadMiddleware = multer({dest:'uploads/'})
 const fs = require('fs')
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
-app.use('/uploads',express.static(__dirname + '/uploads'))
-app.use(cors({credentials:true,origin:['http://localhost:3000','https://mereblogs.netlify.app/']}))
+app.use('/uploads', express.static(__dirname + '/uploads'))
+const corsOptions = {
+    origin: 'https://mereblogs.netlify.app', // Allow this origin
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // Allow cookies if needed
+  };
+app.use(cors(corsOptions))
+app.options('*', cors(corsOptions)); // Handle preflight requests
+
 app.use(express.json())
 const Post = require('./models/Post')
 // const axios = require('axios');
