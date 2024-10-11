@@ -14,7 +14,7 @@ const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 app.use('/uploads', express.static(__dirname + '/uploads'))
 const corsOptions = {
-    origin: 'https://mereblogs.netlify.app', // Allow this origin
+    origin: ['https://mereblogs.netlify.app','http://localhost:3000'], // Allow this origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // Allow cookies if needed
   };
