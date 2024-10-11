@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import Post from './Post'
-import background from './assets/background.json'
-import Lottie from 'lottie-react';
 import Layout from './Layout';
 export default function Posts() {
   const [posts,setPosts] = useState([])

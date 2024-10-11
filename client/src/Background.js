@@ -4,22 +4,22 @@ import Lottie from 'lottie-react';
 import './bg.css'
 import man from './assets/laptopMan.json'
 import MobileMan from './assets/MobileMan.json'
-import arrow from './assets/arrow.json'
+
 import footerAnimation from './assets/footerAnimation.json'
 import Layout from './Layout';
-import  { useState } from 'react';
+
 function Background() {
-    const [showNavbar, setShowNavbar] = useState(true);
-    const toggleNavbar = () => {
-        setShowNavbar(!showNavbar);
-      };
+    // const [showNavbar, setShowNavbar] = useState(true);
+    // const toggleNavbar = () => {
+    //     setShowNavbar(!showNavbar);
+    //   };
     return (<>
-        {showNavbar && (
+        
             <div className="layout" >
           <Layout ></Layout>
           {/* <Lottie className='footerAni' animationData={footerAnimation}></Lottie> */}
             </div>
-            )}
+            
       <div className='bg-container'>
 
     

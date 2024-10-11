@@ -1,8 +1,5 @@
 
 import './App.css';
-import Home from './Posts';
-//import Header from './Header';
-import Layout from './Layout';
 import { UserContextProvider }  from './UserContext';
 import { Route,Routes } from 'react-router-dom';
 import LoginPage from './LoginPage';

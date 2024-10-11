@@ -11,7 +11,7 @@ export default function LoginPage() {
   const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [redirect, setRedirect] = useState(false)
-    const {userInfo,setUserInfo} = useContext(UserContext)
+    const {setUserInfo} = useContext(UserContext)
   async function loginInfo(ev) {
     // console.log(username,password)
     // if (username==='' && password==='') {

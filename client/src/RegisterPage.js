@@ -5,14 +5,14 @@ import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { Navigate } from 'react-router-dom'
 const MySwal = withReactContent(Swal)
-const validateEmail = (email) => {
-  // Basic email regex
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-};
-const validatePassword = (password) => {
-  // Basic password length check
-  return password.length >= 6;
-};
+// const validateEmail = (email) => {
+//   // Basic email regex
+//   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+// };
+// const validatePassword = (password) => {
+//   // Basic password length check
+//   return password.length >= 6;
+// };
 export default function RegisterPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')

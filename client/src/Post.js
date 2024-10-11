@@ -1,9 +1,9 @@
 import React from 'react'
 import './App.css'
 import { Link } from 'react-router-dom'
- import {formatISO9075} from 'date-fns'
-export default function Post({ _id, title, summary, cover, content, createdAt, author }) {
+export default function Post({ _id, title, summary, cover, content}) {
   let shortContent = "";
+  // createdAt, author 
 //   if (content.includes("<br></p>")) {
 //  shortContent= content.replace("<br></p>","")
 //   }

@@ -1,5 +1,4 @@
 import { useState,useEffect } from "react"
-import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import Editor from "./Editor"
 import { useParams, Navigate } from "react-router-dom"
