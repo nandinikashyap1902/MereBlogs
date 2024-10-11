@@ -23,6 +23,7 @@ export default function RegisterPage() {
     // setEmailError(validateEmail(username) ? '' : 'Please enter a valid email');
     // setPasswordError(validatePassword(password)?'':'Password must be at least 6 characters')
     ev.preventDefault();
+    console.log(process.env.REACT_APP_API_URL)
     if (username === '' && password === '') {
      return 'enter all details'
     } else {
@@ -33,7 +34,7 @@ export default function RegisterPage() {
           body: JSON.stringify({ username, password }),
           headers: { 'Content-Type': 'application/json' }
         })
-        console.log(process.env.REACT_APP_API_URL)
+       
         if (response.status === 200) {
           MySwal.fire({
             title: 'Success!',
