@@ -14,7 +14,6 @@ const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 app.use('/uploads', express.static(__dirname + '/uploads'))
 require('dotenv').config();
-console.log(process.env.NODE_ENV)
 const corsOptions = {
     origin: ['https://mereblogs.netlify.app','http://localhost:3000'], // Allow this origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -85,7 +84,6 @@ app.post('/login', async (req, res) => {
 
 app.get('/profile', (req, res) => {
     const { token } = req.cookies;
-    console.log('Profile',token)
     if (!token) {
         return res.status(401).json({ error: 'No token provided' });
     }
