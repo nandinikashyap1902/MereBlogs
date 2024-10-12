@@ -37,7 +37,7 @@ export default function LoginPage() {
       
         response.json().then(userInfo => {
             setUserInfo(userInfo)
-            // console.log(userInfo)
+             console.log(userInfo)
             setRedirect(true)
         })
         MySwal.fire({

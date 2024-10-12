@@ -9,13 +9,14 @@ export default function Header() {
  const {userInfo,setUserInfo} = useContext(UserContext)
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/profile`, {
+      method: 'GET',
       credentials:'include'
     }).then(res => {
       res.json().then(userInfo => {
         setUserInfo(userInfo)
       })
     })
-  }, [setUserInfo])
+  }, [])
   function logout() {
     fetch(`${process.env.REACT_APP_API_URL}/logout`, {
       credentials: 'include',
@@ -25,6 +26,7 @@ export default function Header() {
     
   }
   const username = userInfo?.username
+  console.log(username)
   return (
     <header>
       

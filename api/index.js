@@ -13,6 +13,8 @@ const fs = require('fs')
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
 app.use('/uploads', express.static(__dirname + '/uploads'))
+require('dotenv').config();
+console.log(process.env.NODE_ENV)
 const corsOptions = {
     origin: ['https://mereblogs.netlify.app','http://localhost:3000'], // Allow this origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -23,20 +25,6 @@ app.options('*', cors(corsOptions)); // Handle preflight requests
 
 app.use(express.json())
 const Post = require('./models/Post')
-// const axios = require('axios');
-
-// Function to fetch and log the public IP
-// async function logPublicIP() {
-//     try {
-//         const response = await fetch('https://api.ipify.org?format=json');
-//         console.log('Render Public IP Address:', response.data.ip);
-//     } catch (error) {
-//         console.error('Error fetching public IP:', error);
-//     }
-// }
-
-// // Call the function
-// logPublicIP();
 
 mongoose.connect(mongoURI, {
 }).then(() => {
@@ -65,43 +53,31 @@ app.post('/register', (req, res) => {
 app.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
-
-        // Basic input validation
         if (!username || !password) {
             return res.status(400).json({ message: 'Username and password are required.' });
         }
-
-        // Find user by username
         const userDoc = await User.findOne({ username });
         if (!userDoc) {
-            // Don't reveal whether it's the username or password that was incorrect
             return res.status(400).json({ message: 'Invalid credentials.' });
         }
-
-        // Compare password asynchronously to avoid blocking the event loop
         const passOk = await bcrypt.compare(password, userDoc.password);
         if (!passOk) {
             return res.status(400).json({ message: 'Invalid credentials.' });
         }
-
-        // Generate JWT token securely
         jwt.sign(
-            { username, id: userDoc._id },
-            secret,// Ensure secret is stored securely in environment variables
-            { expiresIn: '1h' }, // Optional expiration time for the token
-            (err, token) => {
+            { username, id: userDoc._id },secret,{ expiresIn: '1h' },(err, token) => {
                 if (err) {
                     console.error('JWT signing error:', err);
                     return res.status(500).json({ message: 'Authentication failed. Please try again.' });
                 }
-                
-                // Send token as a cookie and response with user info
-                res.cookie('token', token, { httpOnly: true, })
-                   .json({ id: userDoc._id, username });
-            }
-        );
+                res.cookie('token', token, {
+                    httpOnly: true,  // JavaScript can't access the cookie
+                    secure: process.env.NODE_ENV === 'production',  // Use secure cookies in production (HTTPS)
+                    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',  // Adjust SameSite attribute
+                    maxAge: 3600000  // Cookie valid for 1 hour
+                })
+                   .json({ id: userDoc._id, username }); });
     } catch (err) {
-        // Log the error and respond with a generic error message
         console.error('Login error:', err);
         res.status(500).json({ message: 'Internal server error. Please try again later.' });
     }
@@ -109,19 +85,16 @@ app.post('/login', async (req, res) => {
 
 app.get('/profile', (req, res) => {
     const { token } = req.cookies;
-    
-    // Check if token exists in the cookies
+    console.log('Profile',token)
     if (!token) {
         return res.status(401).json({ error: 'No token provided' });
     }
-     // Verify the token
-    jwt.verify(token, secret, {}, (err,info) => {
+    jwt.verify(token, secret, (err,info) => {
         if (err) {
-            return res.status(403).json({ error: 'Token is invalid or expired' });
-
+            return res.status(403).json({ error: 'Token is invalid or expired' })
         }
-        // Return the decoded token information (usually user profile data)
         res.json(info);
+        
     })
 }) 
 
