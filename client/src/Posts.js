@@ -17,9 +17,10 @@ export default function Posts() {
     <>
       {/* <Lottie animationData={background}></Lottie> */}
       <Layout></Layout>
-      {posts.length > 0 && posts.map(post => {
-      return  <Post {...post} />
-         })}
+      {posts.length > 0 ? posts.map(post => {
+      return  <Post {...post}  />
+      }) :(
+      <p style={{textAlign:'center'}}>No posts to display</p>)}
       </>
   )
 }

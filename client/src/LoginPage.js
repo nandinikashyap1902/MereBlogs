@@ -79,7 +79,7 @@ export default function LoginPage() {
       </div>
       <div class="buttons">
   <button class="blob-btn">
-   Post
+   Login
     <span class="blob-btn__inner">
       <span class="blob-btn__blobs">
         <span class="blob-btn__blob"></span>

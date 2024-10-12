@@ -8,10 +8,13 @@ export default function Post({ _id, title, summary, cover, content}) {
 //  shortContent= content.replace("<br></p>","")
 //   }
    shortContent = content.toString().replaceAll("<p>","").slice(0,90)
-  
+   shortContent+='....'
   return (
   <>
-  <hr></hr>
+      <hr></hr>
+      <div className='post-div'>
+
+      
     <div className="post">
       <div className="image">
         <Link to={`/post/${_id}`}>
@@ -32,7 +35,8 @@ export default function Post({ _id, title, summary, cover, content}) {
       </p> */}
         <div dangerouslySetInnerHTML={{ __html: shortContent }} />
       </div>
-      </div>
+        </div>
+        </div>
       </>
   )
 }

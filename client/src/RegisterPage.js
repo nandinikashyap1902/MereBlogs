@@ -60,11 +60,11 @@ export default function RegisterPage() {
     
     setUsername('')
     setPassword('')
-    if (redirect) {
-      return (
-          <Navigate to="/" />
-      )
   }
+  if (redirect) {
+    return (
+        <Navigate to="/login" />
+    )
 }
   return (
     <div className="center register" onSubmit={register}>
@@ -82,7 +82,7 @@ export default function RegisterPage() {
       </div>
       <div class="buttons">
   <button class="blob-btn">
-   Post
+   Register
     <span class="blob-btn__inner">
       <span class="blob-btn__blobs">
         <span class="blob-btn__blob"></span>

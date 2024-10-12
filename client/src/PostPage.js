@@ -9,7 +9,7 @@ export function PostPage() {
     const { id } = useParams()
     const { userInfo } = useContext(UserContext)
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_URL}/${id}`)
+        fetch(`${process.env.REACT_APP_API_URL}/post/${id}`)
             .then(res => {
                 res.json().then(postinfo => {
                 setPostInfo(postinfo)
@@ -20,7 +20,7 @@ export function PostPage() {
   async  function deletePost() {
     const confirmDelete = window.confirm("Are you sure you want to delete this post?");
     if (confirmDelete) {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/${id}`, {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/post/${id}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json'
@@ -61,7 +61,8 @@ export function PostPage() {
                     
                         <button onClick={deletePost}>Delete</button>
                     
-                <img src={`http://localhost:4000/${postInfo.cover}`} alt=""/>
+                       
+                    <img src={`${process.env.REACT_APP_API_URL}/${postInfo.cover}`} alt=""/>
                 </div>
             </div>
             

@@ -6,7 +6,8 @@ import { UserContext } from './UserContext'
 // import bg from './assets/header-bg.json'
 import './Button.scss'
 export default function Header() {
- const {userInfo,setUserInfo} = useContext(UserContext)
+  const { userInfo, setUserInfo } = useContext(UserContext)
+  const {clearPosts} = useContext(UserContext)
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/profile`, {
       method: 'GET',
@@ -23,10 +24,9 @@ export default function Header() {
       method:'POST'
     })
     setUserInfo(null)
-    
+    clearPosts();
   }
   const username = userInfo?.username
-  console.log(username)
   return (
     <header>
       
