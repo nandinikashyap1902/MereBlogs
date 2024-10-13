@@ -15,7 +15,7 @@ app.use(cookieParser())
 app.use('/uploads', express.static(__dirname + '/uploads'))
 require('dotenv').config();
 const corsOptions = {
-    origin: process.env.NODE_ENV === 'production' ? 'https://yourfrontenddomain.com' : 'http://localhost:3000', // Allow this origin
+   origin: ['https://mereblogs.netlify.app','http://localhost:3000'], // Allow this origin, // Allow this origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // Allow cookies if needed
   };
