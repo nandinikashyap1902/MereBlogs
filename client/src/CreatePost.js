@@ -4,7 +4,9 @@ import { Navigate } from 'react-router-dom'
 import Editor from './Editor'
 import './App.css'
 import './Form.css'
-
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
 export default function CreatePost() {
     const[title,setTitle] = useState('')
     const[summary,setSummary] = useState('')
@@ -30,7 +32,13 @@ export default function CreatePost() {
             method: 'POST',
       body: data,
             credentials:'include'
-        })
+    })
+    MySwal.fire({
+      title: 'Success!',
+      text: 'Your post has been created.',
+      icon: 'success',
+      confirmButtonText: 'OK'
+     })
      if (response.ok) {
     setRedirect(true)
      }

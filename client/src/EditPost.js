@@ -3,6 +3,9 @@ import 'react-quill/dist/quill.snow.css'
 import Editor from "./Editor"
 import { useParams, Navigate } from "react-router-dom"
 import './App.css'
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
 export default function EditPost() {
     const {id} = useParams()
     const[title,setTitle] = useState('')
@@ -33,14 +36,17 @@ export default function EditPost() {
         if (files?.[0]) {
             data.set('file', files?.[0])
         }
-    const response=  await fetch(`${process.env.REACT_APP_API_URL}/post`, {
+     await fetch(`${process.env.REACT_APP_API_URL}/post`, {
           method: 'PUT',
         body: data,
           credentials:'include'
       })
-      if (response.ok) {
-          console.log(response.json())
-      }
+      MySwal.fire({
+        title: 'Success!',
+        text: 'Your post has been updated.',
+        icon: 'success',
+        confirmButtonText: 'OK'
+       })
       setRedirect(true)
     }
     

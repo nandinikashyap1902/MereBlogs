@@ -17,14 +17,13 @@ export default function Header() {
         setUserInfo(userInfo)
       })
     })
-  }, [])
+  }, [setUserInfo])
   function logout() {
     fetch(`${process.env.REACT_APP_API_URL}/logout`, {
       credentials: 'include',
       method:'POST'
     })
-    setUserInfo(null)
-    clearPosts();
+    setUserInfo('')
   }
   const username = userInfo?.username
   return (

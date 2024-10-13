@@ -55,11 +55,12 @@ export function PostPage() {
 </svg>
 
                                 Edit this post</Link>
+                                <button onClick={deletePost}>Delete</button>
                            </div> 
                         
                     )}
                     
-                        <button onClick={deletePost}>Delete</button>
+                       
                     
                        
                     <img src={`${process.env.REACT_APP_API_URL}/${postInfo.cover}`} alt=""/>

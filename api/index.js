@@ -15,7 +15,7 @@ app.use(cookieParser())
 app.use('/uploads', express.static(__dirname + '/uploads'))
 require('dotenv').config();
 const corsOptions = {
-    origin: ['https://mereblogs.netlify.app','http://localhost:3000'], // Allow this origin
+    origin: process.env.NODE_ENV === 'production' ? 'https://yourfrontenddomain.com' : 'http://localhost:3000', // Allow this origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // Allow cookies if needed
   };
@@ -97,7 +97,16 @@ app.get('/profile', (req, res) => {
 }) 
 
     app.post('/logout', (req, res) => {
-        res.cookie('token','').json('ok')
+        res.cookie('token', '', { 
+            httpOnly: true, 
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'strict',
+            path: '/',
+            domain: process.env.NODE_ENV === 'production' ? 'https://mereblogs.onrender.com' : 'http://localhost:3000', // Use your actual domain in production
+            expires: new Date(0) 
+        }).json('ok');
+        // const { token } = res.cookies;
+        // console.log(token)
     })
 
     app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
