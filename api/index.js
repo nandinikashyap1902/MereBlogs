@@ -12,6 +12,8 @@ const uploadMiddleware = multer({dest:'uploads/'})
 const fs = require('fs')
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
+app.set('trust proxy', 1);
+
 app.use('/uploads', express.static(__dirname + '/uploads'))
 require('dotenv').config();
 const corsOptions = {
