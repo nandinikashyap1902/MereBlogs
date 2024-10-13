@@ -25,6 +25,8 @@ export default function Header() {
     setUserInfo('')
   }
   const username = userInfo?.username
+  let name = username ? username.toString().split('@'):''
+  name = name[0]
   return (
     <header>
       
@@ -32,6 +34,7 @@ export default function Header() {
       <nav>
         {username && (
           <>
+            <p style={{fontSize:'1rem',fontWeight:'bold'}}>Welcome back,{name}</p>
             <Link to="/create">
               <div class="buttons">
                 {/* <avatar>Hiii{username}</avatar> */}

@@ -27,7 +27,8 @@ color:inherit;
 }
 header .logo{
   font-weight: bold;
-  margin-bottom: 35px;
+  /* font-size: 5rem; */
+  /* margin-bottom: 35px; */
 }
 
 header nav{
@@ -46,25 +47,21 @@ header nav{
 } */
 div .post-div{
   display: flex;
-  justify-content:space-between;
   align-items: center;
-  margin: 0;
- 
 }
 div .post-div .post{
-  
   display: grid;
   grid-template-columns: 1fr 1fr;
-  margin: 0 auto;
-  
+ justify-content: center;
+margin: 0 auto;
+  gap:8em
 }
-/* @media screen and (min-width: 750px){
-  div.post{
+@media screen and (min-width: 750px){
+  div .post-div .post{
     grid-template-columns: 1fr 1fr;
    
   }
-  
-} */
+}
 
 
 div.post div.texts h2{
@@ -180,27 +177,30 @@ line-height: 1.6rem;
 }
 
 div.edit-row{
+  
   text-align: center;
   margin-bottom: 20px;
+  
 }
 
 div.post-page a.edit-btn{
-  background-color: #333;
   display:inline-flex;
   align-items: center;
-  gap:5px;
-  color:#fff;
-  padding:15px 30px;
-  border-radius: 5px;
-  text-decoration:none;
+  padding:5px 20px;
+  
 }
 
 a svg{
   height:20px;
+  color:black
 }
 
+div.post-page .edit-row .delete-btn{
+color:black;
+font-weight: bolder;
+}
  .editpost form{
-  max-width:600px
+  max-width:600px;
  }
 
  
