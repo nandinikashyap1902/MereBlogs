@@ -4,7 +4,7 @@ import Layout from './Layout';
 import { UserContext } from './UserContext'
 export default function Posts() {
   const [posts, setPosts] = useState([])
-  const {userInfo} = useContext(UserContext)
+  
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/post`, {
       method: 'GET',
