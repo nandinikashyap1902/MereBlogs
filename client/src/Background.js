@@ -4,8 +4,6 @@ import Lottie from 'lottie-react';
 import './bg.css'
 import man from './assets/laptopMan.json'
 import MobileMan from './assets/MobileMan.json'
-
-import footerAnimation from './assets/footerAnimation.json'
 import Layout from './Layout';
 
 function Background() {
@@ -46,7 +44,7 @@ function Background() {
         </div>
        </div>
           <footer >
-              <Lottie  id="footer" animationData={footerAnimation}></Lottie>
+              <Lottie  id="footer" animationData={background}></Lottie>
           </footer>
     
         </>

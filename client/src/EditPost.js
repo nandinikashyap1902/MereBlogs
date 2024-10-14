@@ -3,6 +3,7 @@ import 'react-quill/dist/quill.snow.css'
 import Editor from "./Editor"
 import { useParams, Navigate } from "react-router-dom"
 import './App.css'
+
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 const MySwal = withReactContent(Swal)
@@ -68,7 +69,8 @@ const formats = [
 //             <Editor value={content} onChange={setContent} formats={formats} />
 //         <button style={{marginTop:'5px'}}>Update Post</button>
         //  </form>
-        <div className="center editpost">
+      <div className="center editpost">
+        <h1>Edit Post</h1>
 <form onSubmit={updatePost} encType="multipart/form-data">
   <div className="inputbox">
     <input type="title" required="required"   value={title}
@@ -85,8 +87,9 @@ const formats = [
         </div>
         <Editor value={content} onChange={setContent} formats={formats} />
   <div class="buttons">
-<button class="blob-btn">
-Post
+<button class="blob-btn" style={{marginTop: '20px',
+  marginLeft: '0'}}>
+Edit
 <span class="blob-btn__inner">
   <span class="blob-btn__blobs">
     <span class="blob-btn__blob"></span>

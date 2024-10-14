@@ -1,11 +1,14 @@
 import React, { useContext} from 'react'
-import { Link } from 'react-router-dom'
+import { Link,useNavigate} from 'react-router-dom'
 import { useEffect } from 'react'
 import { UserContext } from './UserContext'
 // import Lottie from 'lottie-react'
 // import bg from './assets/header-bg.json'
 import './Button.scss'
+
 export default function Header() {
+  const navigate = useNavigate();
+
   const { userInfo, setUserInfo } = useContext(UserContext)
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/profile`, {
@@ -22,8 +25,27 @@ export default function Header() {
       credentials: 'include',
       method:'POST'
     })
-    setUserInfo('')
+    .then((response) => {
+      if (response.ok) {
+        // setUserInfo(null); // Clear user info state
+        setUserInfo(null);
+
+        // Redirect to login page and replace history
+        // navigate('/login', { replace: true });
+
+        // Optionally, force a full page reload to clear any cached data
+        // window.location.reload();
+      } else {
+        console.error('Failed to log out');
+      }
+    })
+    .catch((error) => {
+      console.error('Error during logout:', error);
+    });
   }
+  // useEffect(() => {
+  //   setUserInfo(null);
+  // }, []);
   const username = userInfo?.username
   let name = username ? username.toString().split('@'):''
   name = name[0]

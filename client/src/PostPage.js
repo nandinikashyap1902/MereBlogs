@@ -3,6 +3,9 @@ import { Link, Navigate, useParams } from "react-router-dom"
 import './App.css'
 import { formatISO9075 } from "date-fns"
 import { UserContext } from "./UserContext"
+import Swal from 'sweetalert2'
+import withReactContent from 'sweetalert2-react-content'
+const MySwal = withReactContent(Swal)
 export function PostPage() {
     const [postInfo, setPostInfo] = useState(null)
     const [redirect, setRedirect] = useState(false)
@@ -17,23 +20,57 @@ export function PostPage() {
         })
     },[id] )
     if (!postInfo) return ''
-  async  function deletePost() {
-    const confirmDelete = window.confirm("Are you sure you want to delete this post?");
-    if (confirmDelete) {
-        const response = await fetch(`${process.env.REACT_APP_API_URL}/post/${id}`, {
-            method: 'DELETE',
-            headers: {
-                'Content-Type': 'application/json'
-              },
-              credentials: 'include' 
-        });
-        if (response.ok) {
-           alert('deleted succesfully') // Redirect to homepage or another route after deletion
-        } else {
-            alert('Failed to delete the post');
-        }
-        setRedirect(true)
-}
+    async function deletePost() {
+        
+            Swal.fire({
+              title: "Are you sure?",
+              text: "You won't be able to revert this!",
+              icon: "warning",
+              showCancelButton: true,
+              confirmButtonColor: "#3085d6",
+              cancelButtonColor: "#d33",
+              confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+              if (result.isConfirmed) {
+                fetch(`${process.env.REACT_APP_API_URL}/post/${id}`, {
+                  method: 'DELETE',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  credentials: 'include'
+                })
+                  .then(response => {
+                    if (response.ok) {
+                      return response.json().then(() => {
+                        Swal.fire({
+                          title: 'Deleted!',
+                          text: 'Your post has been deleted successfully.',
+                          icon: 'success',
+                          confirmButtonText: 'OK'
+                        });
+                        setRedirect(true);
+                      });
+                    } else {
+                      Swal.fire({
+                        title: 'Error!',
+                        text: 'Failed to delete the post.',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                      });
+                    }
+                  })
+                  .catch(error => {
+                    Swal.fire({
+                      title: 'Error!',
+                      text: 'An error occurred while deleting the post.',
+                      icon: 'error',
+                      confirmButtonText: 'OK'
+                    });
+                  });
+              }
+            });
+          
+          
     }
     if (redirect) {
         return (

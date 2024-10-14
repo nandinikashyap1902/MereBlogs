@@ -25,11 +25,7 @@ header a{
   text-decoration: none;
 color:inherit;
 }
-header .logo{
-  font-weight: bold;
-  /* font-size: 5rem; */
-  /* margin-bottom: 35px; */
-}
+
 
 header nav{
   display: flex;
@@ -46,29 +42,49 @@ header nav{
  padding:0 auto;
 } */
 div .post-div{
-  display: flex;
-  align-items: center;
+  
+    display: flex;
+    
+   justify-content: center;
 }
 div .post-div .post{
   display: grid;
   grid-template-columns: 1fr 1fr;
- justify-content: center;
-margin: 0 auto;
-  gap:8em
+  gap:30px;
+}
+@media screen and (max-width: 1050px){
+  div .post-div .post{
+
+    display: grid;
+   grid-template-columns: 1fr 1fr;
+  }
+  
 }
 @media screen and (min-width: 750px){
   div .post-div .post{
+   
+    display: grid;
     grid-template-columns: 1fr 1fr;
    
   }
+  
 }
-
-
+.post {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  transition: transform 0.3s ease;
+}
+.post:hover {
+  transform: translateY(-5px);
+}
 div.post div.texts h2{
 margin-top: 30px;
 font-size: 18px;
 font-weight: normal;
 color:#0505A9;
+font-weight: bold;
 }
 
 div.post div.texts a{
@@ -92,7 +108,7 @@ div.post p.info{
 div.post .image img{
   max-width:200px;
   /* width:50%; */
-  /* margin-left: 20px; */
+  
 }
 div.post p.info a.author{
   color:#333;
@@ -101,7 +117,7 @@ div.post p.info a.author{
 div.post p.summary{
   margin: 10px 0;
   line-height: 1.3rem;
-  font-weight: bold;
+ font-size: 0.8rem;
 }
 
 /* form.login,form.register{

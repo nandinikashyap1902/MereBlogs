@@ -75,7 +75,8 @@ app.post('/login', async (req, res) => {
                     httpOnly: true,  // JavaScript can't access the cookie
                     secure: process.env.NODE_ENV === 'production',  // Use secure cookies in production (HTTPS)
                     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',  // Adjust SameSite attribute
-                    maxAge: 3600000  // Cookie valid for 1 hour
+                    maxAge: 3600000 , // Cookie valid for 1 hour
+                    path: '/',
                 })
                    .json({ id: userDoc._id, username }); });
     } catch (err) {
@@ -99,16 +100,23 @@ app.get('/profile', (req, res) => {
 }) 
 
     app.post('/logout', (req, res) => {
-        res.cookie('token', '', { 
-            httpOnly: true, 
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'strict',
-            path: '/',
-            domain: process.env.NODE_ENV === 'production' ? 'https://mereblogs.onrender.com' : 'http://localhost:3000', // Use your actual domain in production
-            expires: new Date(0) 
-        }).json('ok');
-        // const { token } = res.cookies;
-        // console.log(token)
+        req.session.destroy((err) => {
+            if (err) {
+              return res.status(500).json({ message: 'Could not log out' });
+            }
+            res.clearCookie('token' ,{
+                path: '/', 
+                httpOnly: true,  // JavaScript can't access the cookie
+                secure: process.env.NODE_ENV === 'production',  // Use secure cookies in production (HTTPS)
+                sameSite: none,  // Adjust SameSite attribute
+                domain:
+               "mereblogs.onrender.com"
+            });
+            res.set('Cache-Control', 'no-store');
+    
+    // Send response
+    res.status(200).json({ message: 'Logged out successfully' });
+          });
     })
 
     app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
