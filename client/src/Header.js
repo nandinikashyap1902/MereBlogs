@@ -1,15 +1,18 @@
 import React, { useContext} from 'react'
-import { Link,useNavigate} from 'react-router-dom'
-import { useEffect } from 'react'
+import { Link,useLocation} from 'react-router-dom'
+import { useEffect,useState } from 'react'
 import { UserContext } from './UserContext'
 // import Lottie from 'lottie-react'
 // import bg from './assets/header-bg.json'
 import './Button.scss'
+import './App.css'
 
 export default function Header() {
-  const navigate = useNavigate();
+ // const navigate = useNavigate();
 
   const { userInfo, setUserInfo } = useContext(UserContext)
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const location = useLocation();
   useEffect(() => {
     fetch(`${process.env.REACT_APP_API_URL}/profile`, {
       method: 'GET',
@@ -46,9 +49,18 @@ export default function Header() {
   // useEffect(() => {
   //   setUserInfo(null);
   // }, []);
+  useEffect(() => {
+    setDropdownVisible(false);
+  }, [location]);
   const username = userInfo?.username
   let name = username ? username.toString().split('@'):''
   name = name[0]
+  const handleMouseEnter = () => {
+    if (location.pathname === '/posts') return;
+    setDropdownVisible(!dropdownVisible);
+  };
+
+ 
   return (
     <header>
       
@@ -56,7 +68,19 @@ export default function Header() {
       <nav>
         {username && (
           <>
-            <p style={{fontSize:'1rem',fontWeight:'bold'}}>Welcome back,{name}</p>
+            <div className="user-info"  onMouseEnter={handleMouseEnter} 
+      >
+
+            <p style={{ fontSize: '1rem', fontWeight: 'bold' }}>
+                WelcomeBack,
+                {name}
+      </p>
+      {location.pathname !== '/posts' && (
+        <div className={`dropdown-menu ${location.pathname === '/posts' ? 'disabled' : ''}`}>
+          <Link to="/posts">My posts</Link>
+        </div>
+      )}
+            </div>
             <Link to="/create">
               <div class="buttons">
                 {/* <avatar>Hiii{username}</avatar> */}
@@ -175,8 +199,8 @@ export default function Header() {
         }
           
 {/* <Lottie animationData={bg}></Lottie> */}
-         
         </nav>
+
       </header>
   )
 }

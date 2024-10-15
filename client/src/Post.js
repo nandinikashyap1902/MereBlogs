@@ -8,7 +8,7 @@ export default function Post({ _id, title, summary, cover, content}) {
 //  shortContent= content.replace("<br></p>","")
 //   }
    shortContent = content.toString().replaceAll("<p>","").slice(0,90)
-   shortContent+='....'
+  shortContent += '....'
   return (
   <>
       <hr></hr>

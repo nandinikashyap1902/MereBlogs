@@ -4,8 +4,7 @@ import './App.css'
 import { formatISO9075 } from "date-fns"
 import { UserContext } from "./UserContext"
 import Swal from 'sweetalert2'
-import withReactContent from 'sweetalert2-react-content'
-const MySwal = withReactContent(Swal)
+
 export function PostPage() {
     const [postInfo, setPostInfo] = useState(null)
     const [redirect, setRedirect] = useState(false)

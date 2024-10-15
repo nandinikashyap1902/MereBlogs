@@ -127,7 +127,7 @@ app.get('/profile', (req, res) => {
         const ext = parts[parts.length - 1];
         const newPath = path + '.' + ext
         fs.renameSync(path, newPath)
-        const coverPath = newPath.replace(/\\/g, '/');
+        // const coverPath = newPath.replace(/\\/g, '/');
 //console.log(coverPath)
         const { token } = req.cookies;
         jwt.verify(token, secret, {}, async(err,info) => {
@@ -137,7 +137,7 @@ app.get('/profile', (req, res) => {
                 title,
                 summary,
                 content,
-                cover: coverPath,
+                cover: newPath,
                 author:info.id
             })
             res.json(postDoc)
