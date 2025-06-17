@@ -100,9 +100,14 @@ export default function LoginPage() {
     </filter>
   </defs>
               </svg>
+              // In your LoginPage.js
+<div className="form-footer">
+  <a href="/forgot-password">Forgot Password?</a>
+</div>
               </div>
       </form>
       
   </div>
   )
 }
+

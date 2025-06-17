@@ -25,9 +25,10 @@ export default function CreatePost() {
         data.set('title',title)
         data.set('summary',summary)
         data.set('content',content)
-        data.set('file',files[0])
+     data.set('file', files[0])
+    
      ev.preventDefault()
-     
+     console.log(data.file)
     const response=  await fetch(`${process.env.REACT_APP_API_URL}/post`, {
             method: 'POST',
       body: data,
@@ -68,15 +69,15 @@ export default function CreatePost() {
         
         <Editor value={content} onChange={setContent} />
             
-      <div class="buttons btn">
-  <button class="blob-btn">
+      <div className="buttons btn">
+  <button className="blob-btn">
    Post
-    <span class="blob-btn__inner">
-      <span class="blob-btn__blobs">
-        <span class="blob-btn__blob"></span>
-        <span class="blob-btn__blob"></span>
-        <span class="blob-btn__blob"></span>
-        <span class="blob-btn__blob"></span>
+    <span className="blob-btn__inner">
+      <span className="blob-btn__blobs">
+        <span className="blob-btn__blob"></span>
+        <span className="blob-btn__blob"></span>
+        <span className="blob-btn__blob"></span>
+        <span className="blob-btn__blob"></span>
       </span>
     </span>
   </button>

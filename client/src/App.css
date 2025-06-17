@@ -235,7 +235,7 @@ font-weight: bolder;
   transition: opacity 0.2s ease-in-out;
 }
 .user-info p{
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 .dropdown-menu a {
   display: block;

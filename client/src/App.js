@@ -9,6 +9,7 @@ import { PostPage } from './PostPage';
 import EditPost from './EditPost';
 import Background from './Background';
 import Posts from './Posts';
+import ForgotPassword from './ForgotPassword';
 function App() {
   return (
     <UserContextProvider>
@@ -23,6 +24,7 @@ function App() {
 
         <Route path='/posts' element={<Posts />} />
         <Route path="/post/:id" element={<PostPage />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
 
           {/* <Route path="/bg" element={<Background/>} /> */}
  
