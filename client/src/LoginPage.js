@@ -6,6 +6,7 @@ import { UserContext } from './UserContext'
 import './Form.css'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import GoogleAuthButton from './GoogleAuthButton'; // Assuming the component is in the same directory
 const MySwal = withReactContent(Swal)
 export default function LoginPage() {
   const [username, setUsername] = useState('')
@@ -100,14 +101,19 @@ export default function LoginPage() {
     </filter>
   </defs>
               </svg>
-              // In your LoginPage.js
-<div className="form-footer">
-  <a href="/forgot-password">Forgot Password?</a>
-</div>
+              <div className="form-footer">
+                <a href="/forgot-password">Forgot Password?</a>
+              </div>
+              <div className="login-separator">
+                <span>OR</span>
+              </div>
+              <GoogleAuthButton onSuccess={(userData) => {
+                // You can handle successful login here if needed
+                console.log("Google login successful", userData);
+              }} />
               </div>
       </form>
       
   </div>
   )
 }
-
