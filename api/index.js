@@ -198,7 +198,6 @@ app.post('/forgot-password', async (req, res) => {
 app.get('/reset-password/:token', async (req, res) => {
     try {
         const { token } = req.params;
-        
         const user = await User.findOne({ 
             resetPasswordToken: token,
             resetPasswordExpires: { $gt: Date.now() }
