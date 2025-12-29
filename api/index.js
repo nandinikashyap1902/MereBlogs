@@ -1,14 +1,14 @@
 const express = require('express');
 const cors = require('cors')
- const app = express(); 
-const mongoURI="mongodb+srv://nandinikashyap:cmR4Xn6Rw9U6HcV0@cluster0.mxgfz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
+const app = express();
+const mongoURI = "mongodb+srv://nandinikashyap:cmR4Xn6Rw9U6HcV0@cluster0.mxgfz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 const mongoose = require("mongoose")
 const User = require('./models/User')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const secret = "nkuyguy76t68yihiuh8999ybyf"
 const multer = require('multer')
-const uploadMiddleware = multer({dest:'uploads/'})
+const uploadMiddleware = multer({ dest: 'uploads/' })
 const fs = require('fs')
 const cookieParser = require('cookie-parser')
 app.use(cookieParser())
@@ -17,10 +17,10 @@ app.set('trust proxy', 1);
 app.use('/uploads', express.static(__dirname + '/uploads'))
 require('dotenv').config();
 const corsOptions = {
-   origin: ['https://mereblogs.netlify.app','http://localhost:3000'], // Allow this origin, // Allow this origin
+    origin: ['https://mereblogs.netlify.app', 'http://localhost:3000'], // Allow this origin, // Allow this origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // Allow cookies if needed
-  };
+};
 app.use(cors(corsOptions))
 app.options('*', cors(corsOptions)); // Handle preflight requests
 
@@ -31,25 +31,25 @@ mongoose.connect(mongoURI, {
 }).then(() => {
     console.log('MongoDB connection established successfully.');
 })
-.catch((error) => {
-    console.error('MongoDB connection failed:', error);
-});
-app.post('/register', (req, res) => {
+    .catch((error) => {
+        console.error('MongoDB connection failed:', error);
+    });
+app.post('/register', async (req, res) => {
     const { username, password } = req.body
     try {
         const salt = bcrypt.genSaltSync(10);
         const hashedPassword = bcrypt.hashSync(password, salt);
-        const userDoc = User.create({
+        const userDoc = await User.create({
             username,
             password: hashedPassword
         })
-    
-    // res.json({requestData:{username,password}})
-     res.json(userDoc)
+
+        // res.json({requestData:{username,password}})
+        res.json(userDoc)
     } catch (e) {
-        
-    res.status(400).json(e)
-}
+        console.log(e);
+        res.status(400).json(e)
+    }
 })
 app.post('/login', async (req, res) => {
     try {
@@ -66,7 +66,7 @@ app.post('/login', async (req, res) => {
             return res.status(400).json({ message: 'Invalid credentials.' });
         }
         jwt.sign(
-            { username, id: userDoc._id },secret,{ expiresIn: '1h' },(err, token) => {
+            { username, id: userDoc._id }, secret, { expiresIn: '1h' }, (err, token) => {
                 if (err) {
                     console.error('JWT signing error:', err);
                     return res.status(500).json({ message: 'Authentication failed. Please try again.' });
@@ -75,10 +75,11 @@ app.post('/login', async (req, res) => {
                     httpOnly: true,  // JavaScript can't access the cookie
                     secure: process.env.NODE_ENV === 'production',  // Use secure cookies in production (HTTPS)
                     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',  // Adjust SameSite attribute
-                    maxAge: 3600000 , // Cookie valid for 1 hour
+                    maxAge: 3600000, // Cookie valid for 1 hour
                     path: '/',
                 })
-                   .json({ id: userDoc._id, username }); });
+                    .json({ id: userDoc._id, username });
+            });
     } catch (err) {
         console.error('Login error:', err);
         res.status(500).json({ message: 'Internal server error. Please try again later.' });
@@ -90,100 +91,100 @@ app.get('/profile', (req, res) => {
     if (!token) {
         return res.status(401).json({ error: 'No token provided' });
     }
-    jwt.verify(token, secret, (err,info) => {
+    jwt.verify(token, secret, (err, info) => {
         if (err) {
             return res.status(403).json({ error: 'Token is invalid or expired' })
         }
         res.json(info);
-        
-    })
-}) 
 
-    app.post('/logout', (req, res) => {
-        req.session.destroy((err) => {
-            if (err) {
-              return res.status(500).json({ message: 'Could not log out' });
-            }
-            res.clearCookie('token' ,{
-                path: '/', 
-                httpOnly: true,  // JavaScript can't access the cookie
-                secure: process.env.NODE_ENV === 'production',  // Use secure cookies in production (HTTPS)
-                sameSite: none,  // Adjust SameSite attribute
-                domain:
-               "mereblogs.onrender.com"
-            });
-            res.set('Cache-Control', 'no-store');
-    
-    // Send response
-    res.status(200).json({ message: 'Logged out successfully' });
-          });
     })
+})
 
-    app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
-       
-        const { originalname, path } = req.file
-         //console.log(path)
-        const parts = originalname.split('.')
-        const ext = parts[parts.length - 1];
-        const newPath = path + '.' + ext
-        fs.renameSync(path, newPath)
-        // const coverPath = newPath.replace(/\\/g, '/');
-//console.log(coverPath)
-        const { token } = req.cookies;
-        jwt.verify(token, secret, {}, async(err,info) => {
-            if (err) throw err;
-            const { title, summary, content} = req.body;
-            const postDoc = await Post.create({
-                title,
-                summary,
-                content,
-                cover: newPath,
-                author:info.id
-            })
-            res.json(postDoc)
+app.post('/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ message: 'Could not log out' });
+        }
+        res.clearCookie('token', {
+            path: '/',
+            httpOnly: true,  // JavaScript can't access the cookie
+            secure: process.env.NODE_ENV === 'production',  // Use secure cookies in production (HTTPS)
+            sameSite: none,  // Adjust SameSite attribute
+            domain:
+                "mereblogs.onrender.com"
+        });
+        res.set('Cache-Control', 'no-store');
+
+        // Send response
+        res.status(200).json({ message: 'Logged out successfully' });
+    });
+})
+
+app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
+
+    const { originalname, path } = req.file
+    //console.log(path)
+    const parts = originalname.split('.')
+    const ext = parts[parts.length - 1];
+    const newPath = path + '.' + ext
+    fs.renameSync(path, newPath)
+    // const coverPath = newPath.replace(/\\/g, '/');
+    //console.log(coverPath)
+    const { token } = req.cookies;
+    jwt.verify(token, secret, {}, async (err, info) => {
+        if (err) throw err;
+        const { title, summary, content } = req.body;
+        const postDoc = await Post.create({
+            title,
+            summary,
+            content,
+            cover: newPath,
+            author: info.id
         })
-
-       
+        res.json(postDoc)
     })
 
- // Ensure your secret is securely stored
+
+})
+
+// Ensure your secret is securely stored
 
 function authMiddleware(req, res, next) {
-  const token = req.cookies.token;  // Retrieve the token from the cookies
+    const token = req.cookies.token;  // Retrieve the token from the cookies
 
-  if (!token) {
-    return res.status(401).json({ message: 'Unauthorized access. No token provided.' });
-  }
+    if (!token) {
+        return res.status(401).json({ message: 'Unauthorized access. No token provided.' });
+    }
 
-  try {
-    // Verify and decode the token
-    const decoded = jwt.verify(token, secret); // Ensure you're using the same `secret`
+    try {
+        // Verify and decode the token
+        const decoded = jwt.verify(token, secret); // Ensure you're using the same `secret`
 
-    // Attach user info to the request object (e.g., user ID)
-    req.user = decoded;
-    next(); // Continue to the next middleware/route handler
-  } catch (err) {
-    console.error('Token verification error:', err);
-    res.status(401).json({ message: 'Token is invalid or expired.' });
-  }
+        // Attach user info to the request object (e.g., user ID)
+        req.user = decoded;
+        next(); // Continue to the next middleware/route handler
+    } catch (err) {
+        console.error('Token verification error:', err);
+        res.status(401).json({ message: 'Token is invalid or expired.' });
+    }
 }
 
 
-    app.get('/post',authMiddleware, async (req, res) => {
-        
-        const posts = await Post.find({ author: req.user.id })
-            .populate('author', ['username'])
-            .sort({ createdAt: -1 }).limit(20);
-       
-            res.json(posts);
-    })
+app.get('/post', authMiddleware, async (req, res) => {
+
+    const posts = await Post.find({ author: req.user.id })
+        .populate('author', ['username'])
+        .sort({ createdAt: -1 }).limit(20);
+
+    res.json(posts);
+})
 
 app.get('/post/:id', async (req, res) => {
     const { id } = req.params
-    postDoc = await Post.findById(id).populate('author',['username'])
+    postDoc = await Post.findById(id).populate('author', ['username'])
     res.json(postDoc)
 })
-    
+
 app.put('/post', uploadMiddleware.single('file'), async (req, res) => {
     let newPath = null;
     if (req.file) {
@@ -196,20 +197,20 @@ app.put('/post', uploadMiddleware.single('file'), async (req, res) => {
     const { token } = req.cookies;
     jwt.verify(token, secret, {}, async (err, info) => {
         if (err) throw err;
-        const {id, title, summary, content } = req.body;
+        const { id, title, summary, content } = req.body;
         const postDoc = await Post.findById(id)
         const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
-        if(!isAuthor){
+        if (!isAuthor) {
             return res.status(400).json('you are not the author')
         }
-         // Update post fields and save the document
-         postDoc.title = title;
-         postDoc.summary = summary;
-         postDoc.content = content;
-         postDoc.cover = newPath ? newPath : postDoc.cover;
-         
-         // Save the updated document
-         await postDoc.save();
+        // Update post fields and save the document
+        postDoc.title = title;
+        postDoc.summary = summary;
+        postDoc.content = content;
+        postDoc.cover = newPath ? newPath : postDoc.cover;
+
+        // Save the updated document
+        await postDoc.save();
         res.json(postDoc)
     })
 })
@@ -217,17 +218,17 @@ app.put('/post', uploadMiddleware.single('file'), async (req, res) => {
 //     const  token  = req.cookies.token;
 // console.log(token)
 //     if (!token) return res.status(401).json({ message: 'Token is required' });
-    
+
 //     jwt.verify(token, secret, (err, user) => {
 //         if (err) return res.status(403).json({ message: 'Invalid token' });
 //         req.user = user;
 //         next();
 //     });
 // }
-app.delete('/post/:id', authMiddleware,async (req, res) => { 
+app.delete('/post/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params; // Get post ID from URL params
-console.log('id:',id)
+        console.log('id:', id)
         // Find the post by ID
         const postDoc = await Post.findById(id);
 
