@@ -101,23 +101,16 @@ app.get('/profile', (req, res) => {
 })
 
 app.post('/logout', (req, res) => {
-    req.session.destroy((err) => {
-        if (err) {
-            return res.status(500).json({ message: 'Could not log out' });
-        }
-        res.clearCookie('token', {
-            path: '/',
-            httpOnly: true,  // JavaScript can't access the cookie
-            secure: process.env.NODE_ENV === 'production',  // Use secure cookies in production (HTTPS)
-            sameSite: none,  // Adjust SameSite attribute
-            domain:
-                "mereblogs.onrender.com"
-        });
-        res.set('Cache-Control', 'no-store');
-
-        // Send response
-        res.status(200).json({ message: 'Logged out successfully' });
+    res.clearCookie('token', {
+        path: '/',
+        httpOnly: true,  // JavaScript can't access the cookie
+        secure: process.env.NODE_ENV === 'production',  // Use secure cookies in production (HTTPS)
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax'
     });
+    res.set('Cache-Control', 'no-store');
+
+    // Send response
+    res.status(200).json({ message: 'Logged out successfully' });
 })
 
 app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
