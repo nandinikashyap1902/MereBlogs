@@ -6,7 +6,7 @@ export default function Posts() {
   const [posts, setPosts] = useState([])
 
   useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/user-posts`, {
+    fetch(`${process.env.REACT_APP_API_URL}/post`, {
       method: 'GET',
       credentials: 'include',
     }).then(res => {

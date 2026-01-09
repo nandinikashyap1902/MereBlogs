@@ -165,11 +165,11 @@ function authMiddleware(req, res, next) {
 }
 
 
-app.get('/user-posts', authMiddleware, async (req, res) => {
+app.get('/post', authMiddleware, async (req, res) => {
 
     const posts = await Post.find({ author: req.user.id })
         .populate('author', ['username'])
-        .sort({ createdAt: -1 });
+        .sort({ createdAt: -1 }).limit(20);
 
     res.json(posts);
 })
