@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors')
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 const app = express();
+
 const mongoURI = "mongodb+srv://nandinikashyap:cmR4Xn6Rw9U6HcV0@cluster0.mxgfz.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 const mongoose = require("mongoose")
 const User = require('./models/User')
@@ -163,11 +165,11 @@ function authMiddleware(req, res, next) {
 }
 
 
-app.get('/post', authMiddleware, async (req, res) => {
+app.get('/user-posts', authMiddleware, async (req, res) => {
 
     const posts = await Post.find({ author: req.user.id })
         .populate('author', ['username'])
-        .sort({ createdAt: -1 }).limit(20);
+        .sort({ createdAt: -1 });
 
     res.json(posts);
 })
@@ -243,4 +245,65 @@ app.delete('/post/:id', authMiddleware, async (req, res) => {
         res.status(500).json({ message: 'Internal server error. Please try again later.' });
     }
 })
+app.post('/generate-blog', async (req, res) => {
+    const { title, keywords, tone, wordLimit } = req.body;
+
+    if (!process.env.GEMINI_API_KEY) {
+        return res.status(500).json({ error: "API Key is missing" });
+    }
+
+    try {
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+        const prompt = `Write a blog post draft with the following details:
+        Title: ${title}
+        Keywords: ${keywords}
+        Tone: ${tone}
+        Word Limit: ${wordLimit} words.
+        
+        Format the output with appropriate HTML tags for a blog post (e.g., <h2>, <p>, <ul>, <strong>), but do not include the <html>, <head>, or <body> tags. Just the structured content suitable for a rich text editor.`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        res.json({ content: text });
+    } catch (error) {
+        console.error("Error generating blog:", error);
+        res.status(500).json({ error: "Failed to generate blog post" });
+    }
+}
+);
+
+app.post('/improve-blog', async (req, res) => {
+    const { content, instruction } = req.body;
+
+    if (!process.env.GEMINI_API_KEY) {
+        return res.status(500).json({ error: "API Key is missing" });
+    }
+
+    try {
+        const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+        // Using standard model for reliability
+        const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+
+        const prompt = `Rewrite the following blog content based on this instruction: "${instruction}".
+        
+        Current Content:
+        ${content}
+        
+        Keep the HTML structure intact where possible, but improve the text. Do not mistakenly remove necessary tags. Output only the HTML body content.`;
+
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        res.json({ content: text });
+    } catch (error) {
+        console.error("Error improving blog:", error);
+        res.status(500).json({ error: "Failed to improve blog post" });
+    }
+});
+
 app.listen(4000)
