@@ -9,7 +9,8 @@ export function PostPage() {
     const [postInfo, setPostInfo] = useState(null)
     const [redirect, setRedirect] = useState(false)
     const { id } = useParams()
-    const { userInfo } = useContext(UserContext)
+  const { userInfo } = useContext(UserContext)
+  console.log(userInfo)
     useEffect(() => {
         fetch(`${process.env.REACT_APP_API_URL}/post/${id}`)
             .then(res => {

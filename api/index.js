@@ -69,10 +69,11 @@ app.post('/login', async (req, res) => {
         }
         jwt.sign(
             { username, id: userDoc._id }, secret, { expiresIn: '1h' }, (err, token) => {
+                console.log('token inside jwt',token)
                 if (err) {
                     console.error('JWT signing error:', err);
                     return res.status(500).json({ message: 'Authentication failed. Please try again.' });
-                }
+                } 
                 res.cookie('token', token, {
                     httpOnly: true,  // JavaScript can't access the cookie
                     secure: process.env.NODE_ENV === 'production',  // Use secure cookies in production (HTTPS)
@@ -90,6 +91,7 @@ app.post('/login', async (req, res) => {
 
 app.get('/profile', (req, res) => {
     const { token } = req.cookies;
+    //console.log('token',token)
     if (!token) {
         return res.status(401).json({ error: 'No token provided' });
     }
@@ -115,35 +117,6 @@ app.post('/logout', (req, res) => {
     res.status(200).json({ message: 'Logged out successfully' });
 })
 
-app.post('/post', uploadMiddleware.single('file'), async (req, res) => {
-
-    const { originalname, path } = req.file
-    //console.log(path)
-    const parts = originalname.split('.')
-    const ext = parts[parts.length - 1];
-    const newPath = path + '.' + ext
-    fs.renameSync(path, newPath)
-    // const coverPath = newPath.replace(/\\/g, '/');
-    //console.log(coverPath)
-    const { token } = req.cookies;
-    jwt.verify(token, secret, {}, async (err, info) => {
-        if (err) throw err;
-        const { title, summary, content } = req.body;
-        const postDoc = await Post.create({
-            title,
-            summary,
-            content,
-            cover: newPath,
-            author: info.id
-        })
-        res.json(postDoc)
-    })
-
-
-})
-
-// Ensure your secret is securely stored
-
 function authMiddleware(req, res, next) {
     const token = req.cookies.token;  // Retrieve the token from the cookies
 
@@ -154,7 +127,7 @@ function authMiddleware(req, res, next) {
     try {
         // Verify and decode the token
         const decoded = jwt.verify(token, secret); // Ensure you're using the same `secret`
-
+console.log('authmiddleware',decoded)
         // Attach user info to the request object (e.g., user ID)
         req.user = decoded;
         next(); // Continue to the next middleware/route handler
@@ -165,11 +138,42 @@ function authMiddleware(req, res, next) {
 }
 
 
+app.post(
+  '/post',
+  authMiddleware,
+  uploadMiddleware.single('file'),
+  async (req, res) => {
+    const { originalname, path } = req.file;
+
+    const ext = originalname.split('.').pop();
+    const newPath = `${path}.${ext}`;
+
+    await fs.promises.rename(path, newPath);
+
+    const { title, summary, content } = req.body;
+
+    const postDoc = await Post.create({
+      title,
+      summary,
+      content,
+      cover: newPath,
+      author: req.user.id 
+    });
+
+    res.json(postDoc);
+  }
+);
+
+
+
+
+
+
 app.get('/post', authMiddleware, async (req, res) => {
 
     const posts = await Post.find({ author: req.user.id })
-        .populate('author', ['username'])
-        .sort({ createdAt: -1 }).limit(20);
+         .populate('author', ['username'])
+         .sort({ createdAt: -1 }).limit(20);
 
     res.json(posts);
 })
@@ -180,35 +184,53 @@ app.get('/post/:id', async (req, res) => {
     res.json(postDoc)
 })
 
-app.put('/post', uploadMiddleware.single('file'), async (req, res) => {
-    let newPath = null;
-    if (req.file) {
-        const { originalname, path } = req.file
-        const parts = originalname.split('.')
-        const ext = parts[parts.length - 1];
-        newPath = path + '.' + ext
-        fs.renameSync(path, newPath)
-    }
-    const { token } = req.cookies;
-    jwt.verify(token, secret, {}, async (err, info) => {
-        if (err) throw err;
-        const { id, title, summary, content } = req.body;
-        const postDoc = await Post.findById(id)
-        const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
-        if (!isAuthor) {
-            return res.status(400).json('you are not the author')
-        }
-        // Update post fields and save the document
-        postDoc.title = title;
-        postDoc.summary = summary;
-        postDoc.content = content;
-        postDoc.cover = newPath ? newPath : postDoc.cover;
+app.put(
+    '/post',
+    authMiddleware,
+    uploadMiddleware.single('file'),
+    async (req, res) => {
+        try {
+            let newPath = null;
 
-        // Save the updated document
-        await postDoc.save();
-        res.json(postDoc)
-    })
-})
+            // Handle optional file upload
+            if (req.file) {
+                const { originalname, path } = req.file;
+                const ext = originalname.split('.').pop();
+                newPath = `${path}.${ext}`;
+                fs.renameSync(path, newPath);
+            }
+
+            const { id, title, summary, content } = req.body;
+
+            const postDoc = await Post.findById(id);
+            if (!postDoc) {
+                return res.status(404).json({ message: 'Post not found' });
+            }
+
+            // Authorization check
+            const isAuthor = postDoc.author.toString() === req.user.id;
+            if (!isAuthor) {
+                return res.status(403).json({ message: 'You are not the author' });
+            }
+
+            // Update fields
+            postDoc.title = title;
+            postDoc.summary = summary;
+            postDoc.content = content;
+            if (newPath) {
+                postDoc.cover = newPath;
+            }
+
+            await postDoc.save();
+            res.json(postDoc);
+
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: 'Failed to update post' });
+        }
+    }
+);
+
 // function authenticateToken(req, res, next) {
 //     const  token  = req.cookies.token;
 // console.log(token)
@@ -222,20 +244,17 @@ app.put('/post', uploadMiddleware.single('file'), async (req, res) => {
 // }
 app.delete('/post/:id', authMiddleware, async (req, res) => {
     try {
-        const { id } = req.params; // Get post ID from URL params
+        const { id } = req.params; 
         console.log('id:', id)
-        // Find the post by ID
         const postDoc = await Post.findById(id);
-
+console.log('postDoc',postDoc)
         if (!postDoc) {
             return res.status(404).json({ message: 'Post not found.' });
         }
-
-        // Check if the authenticated user is the author of the post
+        console.log('req',req.user.id)
         if (postDoc.author.toString() !== req.user.id) {
             return res.status(403).json({ message: 'Forbidden: You are not allowed to delete this post.' });
         }
-
         // If everything is good, delete the post
         await Post.findByIdAndDelete(id);
 
@@ -254,7 +273,7 @@ app.post('/generate-blog', async (req, res) => {
 
     try {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
         const prompt = `Write a blog post draft with the following details:
         Title: ${title}
@@ -286,7 +305,7 @@ app.post('/improve-blog', async (req, res) => {
     try {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
         // Using standard model for reliability
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
         const prompt = `Rewrite the following blog content based on this instruction: "${instruction}".
         
@@ -296,6 +315,7 @@ app.post('/improve-blog', async (req, res) => {
         Keep the HTML structure intact where possible, but improve the text. Do not mistakenly remove necessary tags. Output only the HTML body content.`;
 
         const result = await model.generateContent(prompt);
+        console.log('result',result)
         const response = await result.response;
         const text = response.text();
 
