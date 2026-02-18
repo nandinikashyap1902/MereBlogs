@@ -1,6 +1,8 @@
 api/node_modules
 api/yarn.env
+**/.env
 
 client/node_modules
 client/yarn.lock
+
 
