@@ -1,36 +1,37 @@
-
-import './App.css';
-import { UserContextProvider } from './UserContext';
+import './styles/App.css';
+import { UserContextProvider } from './context/UserContext';
 import { Route, Routes } from 'react-router-dom';
-import LoginPage from './LoginPage';
-import RegisterPage from './RegisterPage';
-import CreatePost from './CreatePost';
-import { PostPage } from './PostPage';
-import EditPost from './EditPost';
-import Background from './Background';
-import Posts from './Posts';
-import BlogGenerator from './BlogGenerator';
+
+// Pages
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import CreatePost from './pages/CreatePost';
+import { PostPage } from './pages/PostPage';
+import EditPost from './pages/EditPost';
+import Posts from './pages/Posts';
+import BlogGenerator from './pages/BlogGenerator';
+
+// Components
+import Background from './components/Background';
+import ProtectedRoute from './components/ProtectedRoute';
+
 function App() {
   return (
     <UserContextProvider>
       <Routes>
-
+        {/* Public routes */}
         <Route path="/" element={<Background />} />
-        {/* <Route index element={<Background />} /> */}
-        <Route path='/login' element={<LoginPage />} />
-        <Route path='/register' element={<RegisterPage />} />
-        <Route path="/create" element={<CreatePost />} />
-        <Route path="/generate" element={<BlogGenerator />} />
-        <Route path='/edit/:id' element={<EditPost />} />
-
-        <Route path='/posts' element={<Posts />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/posts" element={<Posts />} />
         <Route path="/post/:id" element={<PostPage />} />
 
-        {/* <Route path="/bg" element={<Background/>} /> */}
-
+        {/* Protected — require login */}
+        <Route path="/create" element={<ProtectedRoute><CreatePost /></ProtectedRoute>} />
+        <Route path="/generate" element={<ProtectedRoute><BlogGenerator /></ProtectedRoute>} />
+        <Route path="/edit/:id" element={<ProtectedRoute><EditPost /></ProtectedRoute>} />
       </Routes>
     </UserContextProvider>
-
   );
 }
 
