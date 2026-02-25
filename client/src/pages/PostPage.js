@@ -1,24 +1,32 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
 import { formatISO9075 } from 'date-fns';
+import DOMPurify from 'dompurify';
 import { UserContext } from '../context/UserContext';
 import { apiFetch, assetUrl } from '../utils/api';
+import Spinner from '../components/Spinner';
 import '../styles/App.css';
 import Swal from 'sweetalert2';
 
 export function PostPage() {
     const [postInfo, setPostInfo] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [redirect, setRedirect] = useState(false);
     const { id } = useParams();
     const { userInfo } = useContext(UserContext);
 
     useEffect(() => {
+        setLoading(true);
         apiFetch(`/post/${id}`)
-            .then(res => res.json())
-            .then(postinfo => setPostInfo(postinfo));
+            .then(res => {
+                if (!res.ok) throw new Error('Post not found.');
+                return res.json();
+            })
+            .then(postinfo => setPostInfo(postinfo))
+            .catch(err => setError(err.message))
+            .finally(() => setLoading(false));
     }, [id]);
-
-    if (!postInfo) return '';
 
     async function deletePost() {
         Swal.fire({
@@ -46,6 +54,12 @@ export function PostPage() {
     }
 
     if (redirect) return <Navigate to="/posts" />;
+    if (loading) return <Spinner fullPage />;
+    if (error) return <p style={{ textAlign: 'center', color: '#c0392b', padding: '40px' }}>{error}</p>;
+    if (!postInfo) return null;
+
+    // Sanitize content client-side before rendering — double-layer defence with backend sanitization
+    const safeContent = DOMPurify.sanitize(postInfo.content);
 
     return (
         <div className="post-page">
@@ -71,7 +85,8 @@ export function PostPage() {
                     <img src={assetUrl(postInfo.cover)} alt={postInfo.title} />
                 </div>
             </div>
-            <div className="content" dangerouslySetInnerHTML={{ __html: postInfo.content }} />
+            {/* DOMPurify sanitizes client-side; backend sanitize-html already cleaned on write */}
+            <div className="content" dangerouslySetInnerHTML={{ __html: safeContent }} />
         </div>
     );
 }

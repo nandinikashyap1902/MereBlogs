@@ -2,18 +2,40 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const fs = require('fs');
+const { body, validationResult } = require('express-validator');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 const Post = require('../models/Post');
 const authMiddleware = require('../middleware/auth');
+const { sanitizeContent } = require('../middleware/security');
 
 const uploadMiddleware = multer({ dest: 'uploads/' });
+
+// ─── Validation helpers ───────────────────────────────────────────────────────
+
+const postValidation = [
+    body('title').trim().notEmpty().withMessage('Title is required.').isLength({ max: 200 }).withMessage('Title can be at most 200 characters.'),
+    body('summary').trim().notEmpty().withMessage('Summary is required.').isLength({ max: 500 }).withMessage('Summary can be at most 500 characters.'),
+    body('content').trim().notEmpty().withMessage('Content is required.'),
+];
+
+function validate(req, res) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        res.status(422).json({ message: errors.array()[0].msg, errors: errors.array() });
+        return false;
+    }
+    return true;
+}
 
 // ─── POST /post — Create a new post ──────────────────────────────────────────
 router.post(
     '/post',
     authMiddleware,
     uploadMiddleware.single('file'),
+    postValidation,
     async (req, res) => {
+        if (!validate(req, res)) return;
+
         if (!req.file) {
             return res.status(400).json({ message: 'Cover image is required.' });
         }
@@ -25,10 +47,14 @@ router.post(
             await fs.promises.rename(path, newPath);
 
             const { title, summary, content } = req.body;
+           
+            // Sanitize HTML content before storing — strips XSS payloads
+            const safeContent = sanitizeContent(content);
+
             const postDoc = await Post.create({
-                title,
-                summary,
-                content,
+                title: title.trim(),
+                summary: summary.trim(),
+                content: safeContent,
                 cover: newPath,
                 author: req.user.id,
             });
@@ -75,10 +101,10 @@ router.put(
     '/post',
     authMiddleware,
     uploadMiddleware.single('file'),
+    postValidation,
     async (req, res) => {
-        if (!req.file) {
-      return res.status(400).json({ message: 'Cover image is required' });
-    }
+        if (!validate(req, res)) return;
+
         try {
             let newPath = null;
 
@@ -99,9 +125,12 @@ router.put(
                 return res.status(403).json({ message: 'You are not the author.' });
             }
 
-            postDoc.title = title;
-            postDoc.summary = summary;
-            postDoc.content = content;
+            // Sanitize updated HTML content
+            const safeContent = sanitizeContent(content);
+
+            postDoc.title = title.trim();
+            postDoc.summary = summary.trim();
+            postDoc.content = safeContent;
             if (newPath) postDoc.cover = newPath;
 
             await postDoc.save();
@@ -138,6 +167,9 @@ router.delete('/post/:id', authMiddleware, async (req, res) => {
 router.post('/generate-blog', async (req, res) => {
     const { title, keywords, tone, wordLimit } = req.body;
 
+    if (!title || !keywords) {
+        return res.status(400).json({ error: 'Title and keywords are required.' });
+    }
     if (!process.env.GEMINI_API_KEY) {
         return res.status(500).json({ error: 'API Key is missing.' });
     }
@@ -169,6 +201,9 @@ router.post('/generate-blog', async (req, res) => {
 router.post('/improve-blog', async (req, res) => {
     const { content, instruction } = req.body;
 
+    if (!content || !instruction) {
+        return res.status(400).json({ error: 'Content and instruction are required.' });
+    }
     if (!process.env.GEMINI_API_KEY) {
         return res.status(500).json({ error: 'API Key is missing.' });
     }

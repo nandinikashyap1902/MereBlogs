@@ -8,9 +8,12 @@
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
     "date-fns": "^4.1.0",
+    "dompurify": "^3.3.1",
+    "isomorphic-dompurify": "^3.0.0",
     "lottie-react": "^2.4.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-error-boundary": "^6.1.1",
     "react-quill": "^2.0.0",
     "react-router-dom": "^6.26.1",
     "react-scripts": "5.0.1",
@@ -48,5 +51,4 @@
   "devDependencies": {
     "sass": "^1.79.4"
   }
-  
 }

@@ -2,13 +2,15 @@ require('dotenv').config(); // ← Must be first — loads .env before any proce
 
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const path = require('path');
 
-// ─── Route modules ────────────────────────────────────────────────────────────
+// ─── Route modules & security middleware ─────────────────────────────────────
 const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
+const { apiLimiter } = require('./middleware/security');
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -22,6 +24,11 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions)); // Handle preflight requests
 
+// ─── Security headers (Helmet) ────────────────────────────────────────────────
+// Sets: X-Content-Type-Options, X-Frame-Options, HSTS, Referrer-Policy, etc.
+// crossOriginResourcePolicy: 'cross-origin' is needed so /uploads images load from the frontend
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+
 // ─── Global middleware ────────────────────────────────────────────────────────
 app.use(express.json());
 app.use(cookieParser());
@@ -30,13 +37,17 @@ app.set('trust proxy', 1);
 // ─── Static file serving (uploaded images) ───────────────────────────────────
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// ─── General API rate limiter (100 req / 15 min per IP) ──────────────────────
+// Auth routes apply their own stricter per-route limiter on top of this
+app.use(apiLimiter);
+
 // ─── Database connection ──────────────────────────────────────────────────────
 mongoose
     .connect(process.env.MONGO_URI)
     .then(() => console.log('MongoDB connection established successfully.'))
     .catch((err) => {
         console.error('MongoDB connection failed:', err.message);
-        process.exit(1); // Exit if DB connection fails — no point running without DB
+        process.exit(1);
     });
 
 // ─── Mount routes ─────────────────────────────────────────────────────────────
