@@ -18,7 +18,7 @@ export default function Header() {
         apiFetch('/profile', { method: 'GET' })
             .then(res => res.ok ? res.json() : null)
             .then(userInfo => { if (userInfo) setUserInfo(userInfo); });
-    }, []);
+    }, [setUserInfo]);
 
     useEffect(() => {
         setDropdownVisible(false);
