@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import 'react-quill/dist/quill.snow.css';
 import { useParams, Navigate } from 'react-router-dom';
 import Editor from '../components/Editor';
+import BlobButton from '../components/BlobButton';
 import { apiFetch, apiUpload } from '../utils/api';
 import '../styles/App.css';
 import Swal from 'sweetalert2';
@@ -100,40 +101,12 @@ export default function EditPost() {
                 <Editor value={content} onChange={setContent} />
 
                 <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
-                    <button onClick={showImproveOptions} className="blob-btn" style={{ padding: '5px 15px', fontSize: '0.8rem' }}>
+                    <BlobButton onClick={showImproveOptions} style={{ padding: '5px 15px', fontSize: '0.8rem' }}>
                         AI Improve
-                        <span className="blob-btn__inner">
-                            <span className="blob-btn__blobs">
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                            </span>
-                        </span>
-                    </button>
+                    </BlobButton>
                 </div>
 
-                <div className="buttons">
-                    <button className="blob-btn" style={{ marginTop: '20px', marginLeft: '0' }}>
-                        Edit
-                        <span className="blob-btn__inner">
-                            <span className="blob-btn__blobs">
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                            </span>
-                        </span>
-                    </button>
-                    <br />
-                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-                        <defs><filter id="goo">
-                            <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10"></feGaussianBlur>
-                            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 21 -7" result="goo"></feColorMatrix>
-                            <feBlend in2="goo" in="SourceGraphic" result="mix"></feBlend>
-                        </filter></defs>
-                    </svg>
-                </div>
+                <BlobButton type="submit" style={{ marginTop: '20px' }}>Edit</BlobButton>
             </form>
         </div>
     );

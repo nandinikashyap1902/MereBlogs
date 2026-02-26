@@ -2,23 +2,32 @@ import React, { useEffect, useState } from 'react';
 import Post from '../components/Post';
 import Layout from '../components/Layout';
 import Spinner from '../components/Spinner';
+import Pagination from '../components/Pagination';
 import { apiFetch } from '../utils/api';
+import '../styles/Pagination.css';
 
 export default function Posts() {
     const [posts, setPosts] = useState([]);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        apiFetch('/post', { method: 'GET' })
+        setLoading(true);
+        setError(null);
+        apiFetch(`/post?page=${page}&limit=10`, { method: 'GET' })
             .then(res => {
                 if (!res.ok) throw new Error('Failed to load posts.');
                 return res.json();
             })
-            .then(posts => setPosts(posts))
+            .then(data => {
+                setPosts(data.posts);
+                setTotalPages(data.totalPages);
+            })
             .catch(err => setError(err.message))
             .finally(() => setLoading(false));
-    }, []);
+    }, [page]);
 
     return (
         <>
@@ -26,9 +35,13 @@ export default function Posts() {
             {loading && <Spinner fullPage />}
             {error && <p style={{ textAlign: 'center', color: '#c0392b', padding: '40px' }}>{error}</p>}
             {!loading && !error && (
-                posts.length > 0
-                    ? posts.map(post => <Post key={post._id} {...post} />)
-                    : <p style={{ textAlign: 'center', padding: '40px' }}>No posts to display yet.</p>
+                <>
+                    {posts.length > 0
+                        ? posts.map(post => <Post key={post._id} {...post} />)
+                        : <p style={{ textAlign: 'center', padding: '40px' }}>No posts to display yet.</p>
+                    }
+                    <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
+                </>
             )}
         </>
     );

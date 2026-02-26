@@ -2,6 +2,7 @@ import React, { useState, useContext } from 'react';
 import { Navigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import { apiFetch } from '../utils/api';
+import BlobButton from '../components/BlobButton';
 import '../styles/App.css';
 import '../styles/Form.css';
 import Swal from 'sweetalert2';
@@ -29,7 +30,8 @@ export default function LoginPage() {
                 MySwal.fire({ title: 'Success!', text: 'Welcome back!', icon: 'success', confirmButtonText: 'OK' });
                 setRedirect(true);
             } else {
-                MySwal.fire({ title: 'Login failed!', text: 'Invalid credentials.', icon: 'error', confirmButtonText: 'Try Again!' });
+                const data = await response.json();
+                MySwal.fire({ title: 'Login failed!', text: data.message || 'Invalid credentials.', icon: 'error', confirmButtonText: 'Try Again!' });
             }
         } catch (err) {
             MySwal.fire('Error', err.message, 'error');
@@ -41,9 +43,9 @@ export default function LoginPage() {
     if (redirect) return <Navigate to="/posts" />;
 
     return (
-        <div className="center login" onSubmit={loginInfo}>
+        <div className="center login">
             <h1>Login</h1>
-            <form>
+            <form onSubmit={loginInfo}>
                 <div className="inputbox">
                     <input type="text" required onChange={ev => setUsername(ev.target.value)} value={username} />
                     <span>Email</span>
@@ -52,27 +54,7 @@ export default function LoginPage() {
                     <input type="password" required onChange={ev => setPassword(ev.target.value)} value={password} />
                     <span>Password</span>
                 </div>
-                <div className="buttons">
-                    <button className="blob-btn">
-                        Login
-                        <span className="blob-btn__inner">
-                            <span className="blob-btn__blobs">
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                            </span>
-                        </span>
-                    </button>
-                    <br />
-                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-                        <defs><filter id="goo">
-                            <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10"></feGaussianBlur>
-                            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 21 -7" result="goo"></feColorMatrix>
-                            <feBlend in2="goo" in="SourceGraphic" result="mix"></feBlend>
-                        </filter></defs>
-                    </svg>
-                </div>
+                <BlobButton type="submit">Login</BlobButton>
             </form>
         </div>
     );

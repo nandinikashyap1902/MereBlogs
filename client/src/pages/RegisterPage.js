@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { apiFetch } from '../utils/api';
+import BlobButton from '../components/BlobButton';
 import '../styles/App.css';
 import '../styles/Form.css';
 import Swal from 'sweetalert2';
@@ -56,27 +57,7 @@ export default function RegisterPage() {
                     <span>Password</span>
                 </div>
                 <div className="error">{error}</div>
-                <div className="buttons">
-                    <button className="blob-btn">
-                        Register
-                        <span className="blob-btn__inner">
-                            <span className="blob-btn__blobs">
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                            </span>
-                        </span>
-                    </button>
-                    <br />
-                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-                        <defs><filter id="goo">
-                            <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10"></feGaussianBlur>
-                            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 21 -7" result="goo"></feColorMatrix>
-                            <feBlend in2="goo" in="SourceGraphic" result="mix"></feBlend>
-                        </filter></defs>
-                    </svg>
-                </div>
+                <BlobButton type="submit">Register</BlobButton>
             </form>
         </div>
     );

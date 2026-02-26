@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiFetch } from '../utils/api';
+import BlobButton from '../components/BlobButton';
 import '../styles/App.css';
 import '../styles/Form.css';
 import Swal from 'sweetalert2';
@@ -66,27 +67,9 @@ export default function BlogGenerator() {
                     <input type="number" value={wordLimit} onChange={ev => setWordLimit(ev.target.value)} required min="100" max="2000" />
                     <span>Word Limit</span>
                 </div>
-                <div className="buttons btn">
-                    <button className="blob-btn" disabled={loading}>
-                        {loading ? 'Generating...' : 'Generate Draft'}
-                        <span className="blob-btn__inner">
-                            <span className="blob-btn__blobs">
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                                <span className="blob-btn__blob"></span>
-                            </span>
-                        </span>
-                    </button>
-                    <br />
-                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-                        <defs><filter id="goo">
-                            <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10"></feGaussianBlur>
-                            <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 21 -7" result="goo"></feColorMatrix>
-                            <feBlend in2="goo" in="SourceGraphic" result="mix"></feBlend>
-                        </filter></defs>
-                    </svg>
-                </div>
+                <BlobButton type="submit" disabled={loading} className="btn">
+                    {loading ? 'Generating...' : 'Generate Draft'}
+                </BlobButton>
             </form>
         </div>
     );

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import 'react-quill/dist/quill.snow.css';
 import { Navigate, useLocation } from 'react-router-dom';
 import Editor from '../components/Editor';
+import BlobButton from '../components/BlobButton';
 import { apiFetch, apiUpload } from '../utils/api';
 import '../styles/App.css';
 import '../styles/Form.css';
@@ -33,7 +34,8 @@ export default function CreatePost() {
             MySwal.fire({ title: 'Success!', text: 'Your post has been created.', icon: 'success', confirmButtonText: 'OK' });
             setRedirect(true);
         } else {
-            MySwal.fire('Error!', 'Failed to create post. Please try again.', 'error');
+            const err = await response.json().catch(() => ({}));
+            MySwal.fire('Error!', err.message || 'Failed to create post.', 'error');
         }
     }
 
@@ -77,62 +79,32 @@ export default function CreatePost() {
     if (redirect) return <Navigate to="/posts" />;
 
     return (
-        <>
-            <div className="center createpost">
-                <h1>CREATE A NEW POST</h1>
-                <form onSubmit={createNewPost} encType="multipart/form-data">
-                    <div className="inputbox">
-                        <input type="text" value={title} onChange={ev => setTitle(ev.target.value)} />
-                        <span>title</span>
-                    </div>
-                    <div className="inputbox">
-                        <input type="text" value={summary} onChange={ev => setSummary(ev.target.value)} />
-                        <span>summary</span>
-                    </div>
-                    <div className="inputbox">
-                        <input type="file" onChange={ev => setFiles(ev.target.files)} />
-                        <span>file</span>
-                    </div>
+        <div className="center createpost">
+            <h1>CREATE A NEW POST</h1>
+            <form onSubmit={createNewPost} encType="multipart/form-data">
+                <div className="inputbox">
+                    <input type="text" value={title} onChange={ev => setTitle(ev.target.value)} />
+                    <span>title</span>
+                </div>
+                <div className="inputbox">
+                    <input type="text" value={summary} onChange={ev => setSummary(ev.target.value)} />
+                    <span>summary</span>
+                </div>
+                <div className="inputbox">
+                    <input type="file" onChange={ev => setFiles(ev.target.files)} />
+                    <span>file</span>
+                </div>
 
-                    <Editor value={content} onChange={setContent} />
+                <Editor value={content} onChange={setContent} />
 
-                    <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
-                        <button onClick={showImproveOptions} className="blob-btn" style={{ padding: '5px 15px', fontSize: '0.8rem' }}>
-                            AI Improve
-                            <span className="blob-btn__inner">
-                                <span className="blob-btn__blobs">
-                                    <span className="blob-btn__blob"></span>
-                                    <span className="blob-btn__blob"></span>
-                                    <span className="blob-btn__blob"></span>
-                                    <span className="blob-btn__blob"></span>
-                                </span>
-                            </span>
-                        </button>
-                    </div>
+                <div style={{ marginTop: '10px', display: 'flex', justifyContent: 'flex-end' }}>
+                    <BlobButton onClick={showImproveOptions} style={{ padding: '5px 15px', fontSize: '0.8rem' }}>
+                        AI Improve
+                    </BlobButton>
+                </div>
 
-                    <div className="buttons btn">
-                        <button className="blob-btn">
-                            Post
-                            <span className="blob-btn__inner">
-                                <span className="blob-btn__blobs">
-                                    <span className="blob-btn__blob"></span>
-                                    <span className="blob-btn__blob"></span>
-                                    <span className="blob-btn__blob"></span>
-                                    <span className="blob-btn__blob"></span>
-                                </span>
-                            </span>
-                        </button>
-                        <br />
-                        <svg xmlns="http://www.w3.org/2000/svg" version="1.1">
-                            <defs><filter id="goo">
-                                <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="10"></feGaussianBlur>
-                                <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 21 -7" result="goo"></feColorMatrix>
-                                <feBlend in2="goo" in="SourceGraphic" result="mix"></feBlend>
-                            </filter></defs>
-                        </svg>
-                    </div>
-                </form>
-            </div>
-        </>
+                <BlobButton type="submit" className="btn">Post</BlobButton>
+            </form>
+        </div>
     );
 }

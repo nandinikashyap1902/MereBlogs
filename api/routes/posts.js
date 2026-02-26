@@ -27,6 +27,89 @@ function validate(req, res) {
     return true;
 }
 
+// ─── Helper — parse pagination params ────────────────────────────────────────
+function parsePagination(query) {
+    let page = parseInt(query.page, 10) || 1;
+    let limit = parseInt(query.limit, 10) || 10;
+    if (page < 1) page = 1;
+    if (limit < 1) limit = 1;
+    if (limit > 50) limit = 50; // cap at 50
+    return { page, limit, skip: (page - 1) * limit };
+}
+
+// ─── GET /feed — Public feed (all posts, paginated, no auth) ─────────────────
+router.get('/feed', async (req, res) => {
+    try {
+        const { page, limit, skip } = parsePagination(req.query);
+
+        const [posts, total] = await Promise.all([
+            Post.find()
+                .populate('author', ['username'])
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            Post.countDocuments(),
+        ]);
+
+        res.json({
+            posts,
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+        });
+    } catch (err) {
+        console.error('Feed error:', err);
+        res.status(500).json({ message: 'Failed to fetch feed.' });
+    }
+});
+
+// ─── GET /search — Search posts by title/summary (public, paginated) ─────────
+router.get('/search', async (req, res) => {
+    try {
+        const { q } = req.query;
+        if (!q || q.trim().length === 0) {
+            return res.status(400).json({ message: 'Search query (q) is required.' });
+        }
+
+        const { page, limit, skip } = parsePagination(req.query);
+
+        // Use MongoDB text index when available, fall back to regex
+        let filter;
+        try {
+            // $text requires a text index on the collection
+            filter = { $text: { $search: q.trim() } };
+            // Test the filter works (throws if no text index)
+            await Post.findOne(filter).limit(1);
+        } catch {
+            // Fallback: case-insensitive regex on title and summary
+            const regex = new RegExp(q.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'i');
+            filter = { $or: [{ title: regex }, { summary: regex }] };
+        }
+
+        const [posts, total] = await Promise.all([
+            Post.find(filter)
+                .populate('author', ['username'])
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            Post.countDocuments(filter),
+        ]);
+
+        res.json({
+            posts,
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+            query: q.trim(),
+        });
+    } catch (err) {
+        console.error('Search error:', err);
+        res.status(500).json({ message: 'Search failed.' });
+    }
+});
+
 // ─── POST /post — Create a new post ──────────────────────────────────────────
 router.post(
     '/post',
@@ -47,8 +130,6 @@ router.post(
             await fs.promises.rename(path, newPath);
 
             const { title, summary, content } = req.body;
-           
-            // Sanitize HTML content before storing — strips XSS payloads
             const safeContent = sanitizeContent(content);
 
             const postDoc = await Post.create({
@@ -67,14 +148,27 @@ router.post(
     }
 );
 
-// ─── GET /post — Get all posts for the logged-in user ────────────────────────
+// ─── GET /post — Get logged-in user's posts (paginated) ──────────────────────
 router.get('/post', authMiddleware, async (req, res) => {
     try {
-        const posts = await Post.find({ author: req.user.id })
-            .populate('author', ['username'])
-            .sort({ createdAt: -1 })
-            .limit(20);
-        res.json(posts);
+        const { page, limit, skip } = parsePagination(req.query);
+
+        const [posts, total] = await Promise.all([
+            Post.find({ author: req.user.id })
+                .populate('author', ['username'])
+                .sort({ createdAt: -1 })
+                .skip(skip)
+                .limit(limit),
+            Post.countDocuments({ author: req.user.id }),
+        ]);
+
+        res.json({
+            posts,
+            page,
+            limit,
+            total,
+            totalPages: Math.ceil(total / limit),
+        });
     } catch (err) {
         console.error('Fetch posts error:', err);
         res.status(500).json({ message: 'Failed to fetch posts.' });
@@ -125,7 +219,6 @@ router.put(
                 return res.status(403).json({ message: 'You are not the author.' });
             }
 
-            // Sanitize updated HTML content
             const safeContent = sanitizeContent(content);
 
             postDoc.title = title.trim();
@@ -176,7 +269,7 @@ router.post('/generate-blog', async (req, res) => {
 
     try {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
 
         const prompt = `Write a blog post draft with the following details:
     Title: ${title}
@@ -210,7 +303,7 @@ router.post('/improve-blog', async (req, res) => {
 
     try {
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const model = genAI.getGenerativeModel({ model: 'gemini-3-flash-preview' });
 
         const prompt = `Rewrite the following blog content based on this instruction: "${instruction}".
     
