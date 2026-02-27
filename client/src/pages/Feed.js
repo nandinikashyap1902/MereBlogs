@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import Post from '../components/Post';
 import Layout from '../components/Layout';
-import Spinner from '../components/Spinner';
+import { SkeletonList } from '../components/Skeleton';
 import Pagination from '../components/Pagination';
 import { apiFetch } from '../utils/api';
 import '../styles/Pagination.css';
+import '../styles/Skeleton.css';
+
+const SORT_OPTIONS = [
+    { key: 'newest', label: '🕐 Newest' },
+    { key: 'popular', label: '👁 Most Viewed' },
+    { key: 'trending', label: '❤️ Trending' },
+];
 
 /**
- * Feed — public page showing all posts from all users, paginated.
- * No login required.
+ * Feed — public page showing all posts from all users, paginated + sortable.
  */
 export default function Feed() {
     const [posts, setPosts] = useState([]);
@@ -16,11 +22,12 @@ export default function Feed() {
     const [totalPages, setTotalPages] = useState(1);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [sort, setSort] = useState('newest');
 
     useEffect(() => {
         setLoading(true);
         setError(null);
-        apiFetch(`/feed?page=${page}&limit=10`, { method: 'GET' })
+        apiFetch(`/feed?page=${page}&limit=10&sort=${sort}`, { method: 'GET' })
             .then(res => {
                 if (!res.ok) throw new Error('Failed to load feed.');
                 return res.json();
@@ -31,7 +38,14 @@ export default function Feed() {
             })
             .catch(err => setError(err.message))
             .finally(() => setLoading(false));
-    }, [page]);
+    }, [page, sort]);
+
+    function handleSortChange(newSort) {
+        if (newSort !== sort) {
+            setSort(newSort);
+            setPage(1); // reset to page 1 on sort change
+        }
+    }
 
     return (
         <>
@@ -41,8 +55,22 @@ export default function Feed() {
                     📰 Public Feed
                 </h2>
 
-                {loading && <Spinner fullPage />}
+                {/* Sort bar */}
+                <div className="sort-bar">
+                    {SORT_OPTIONS.map(opt => (
+                        <button
+                            key={opt.key}
+                            className={`sort-bar__btn ${sort === opt.key ? 'sort-bar__btn--active' : ''}`}
+                            onClick={() => handleSortChange(opt.key)}
+                        >
+                            {opt.label}
+                        </button>
+                    ))}
+                </div>
+
                 {error && <p style={{ textAlign: 'center', color: '#c0392b', padding: '40px' }}>{error}</p>}
+
+                {loading && <SkeletonList count={4} />}
 
                 {!loading && !error && (
                     <>

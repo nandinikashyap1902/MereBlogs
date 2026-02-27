@@ -1,0 +1,179 @@
+/* ── Skeleton shimmer animation ──────────────────────────────────────── */
+@keyframes shimmer {
+    0% {
+        background-position: -400px 0;
+    }
+
+    100% {
+        background-position: 400px 0;
+    }
+}
+
+.skeleton {
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 37%, #f0f0f0 63%);
+    background-size: 800px 100%;
+    animation: shimmer 1.5s ease-in-out infinite;
+    border-radius: 6px;
+}
+
+/* ── Card skeleton shapes ───────────────────────────────────────────── */
+.skeleton-post {
+    pointer-events: none;
+}
+
+.skeleton--image {
+    width: 200px;
+    height: 140px;
+    border-radius: 8px;
+}
+
+.skeleton--title {
+    width: 70%;
+    height: 22px;
+    margin-bottom: 12px;
+    margin-top: 30px;
+}
+
+.skeleton--line {
+    width: 100%;
+    height: 14px;
+    margin-bottom: 10px;
+}
+
+.skeleton--line-short {
+    width: 60%;
+}
+
+.skeleton-meta {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.skeleton--badge {
+    width: 60px;
+    height: 16px;
+    border-radius: 10px;
+}
+
+/* ── PostPage skeleton shapes ───────────────────────────────────────── */
+.skeleton--heading {
+    width: 60%;
+    height: 32px;
+    margin: 0 auto 8px;
+}
+
+.skeleton--date {
+    width: 140px;
+    height: 14px;
+}
+
+.skeleton--author {
+    width: 120px;
+    height: 14px;
+}
+
+.skeleton--cover {
+    width: 100%;
+    height: 300px;
+    border-radius: 8px;
+}
+
+/* ── Engagement bar ─────────────────────────────────────────────────── */
+.engagement-bar {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 12px 0;
+    font-size: 0.9rem;
+    color: #555;
+}
+
+.engagement-bar__item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.like-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.9rem;
+    color: #555;
+    padding: 4px 8px;
+    border-radius: 20px;
+    transition: all 0.2s ease;
+}
+
+.like-btn:hover {
+    background: #fce4ec;
+    color: #e91e63;
+}
+
+.like-btn--active {
+    color: #e91e63;
+}
+
+.like-btn--active:hover {
+    background: #fce4ec;
+}
+
+.like-btn svg {
+    transition: transform 0.2s ease;
+}
+
+.like-btn:active svg {
+    transform: scale(1.3);
+}
+
+/* ── Post card meta row ─────────────────────────────────────────────── */
+.post-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 8px;
+    font-size: 0.78rem;
+    color: #888;
+}
+
+.post-meta__item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* ── Feed sort bar ──────────────────────────────────────────────────── */
+.sort-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.sort-bar__btn {
+    padding: 6px 16px;
+    border: 1px solid #ddd;
+    background: #fff;
+    color: #555;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.82rem;
+    transition: all 0.2s ease;
+}
+
+.sort-bar__btn:hover {
+    border-color: #0505A9;
+    color: #0505A9;
+}
+
+.sort-bar__btn--active {
+    background: #0505A9;
+    color: #fff;
+    border-color: #0505A9;
+}

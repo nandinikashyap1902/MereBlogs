@@ -51,4 +51,4 @@ export const apiUpload = (endpoint, options = {}) => {
  * @param {string} path - e.g. 'uploads/abc123.jpg'
  * @returns {string}
  */
-export const assetUrl = (path) => `${BASE_URL}/${path}`;
+export const assetUrl = (path) => `${BASE_URL}/${path?.replace(/\\/g, '/')}`;

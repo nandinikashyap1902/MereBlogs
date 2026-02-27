@@ -10,7 +10,6 @@ import '../styles/App.css';
 export default function Header() {
     const navigate = useNavigate();
     const { userInfo, setUserInfo } = useContext(UserContext);
-    const [dropdownVisible, setDropdownVisible] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const location = useLocation();
 
@@ -19,10 +18,6 @@ export default function Header() {
             .then(res => res.ok ? res.json() : null)
             .then(userInfo => { if (userInfo) setUserInfo(userInfo); });
     }, [setUserInfo]);
-
-    useEffect(() => {
-        setDropdownVisible(false);
-    }, [location]);
 
     function logout() {
         apiFetch('/logout', { method: 'POST' })
@@ -46,11 +41,6 @@ export default function Header() {
 
     const username = userInfo?.username;
     const name = username ? username.toString().split('@')[0] : '';
-
-    const handleMouseEnter = () => {
-        if (location.pathname === '/posts') return;
-        setDropdownVisible(!dropdownVisible);
-    };
 
     return (
         <header>
@@ -81,16 +71,13 @@ export default function Header() {
 
                 {username && (
                     <>
-                        <div className="user-info" onMouseEnter={handleMouseEnter}>
-                            <p style={{ fontSize: '1rem', fontWeight: 'bold' }}>
-                                WelcomeBack, {name}
-                            </p>
-                            {location.pathname !== '/posts' && (
-                                <div className="dropdown-menu">
-                                    <Link to="/posts">My posts</Link>
-                                </div>
-                            )}
-                        </div>
+                        <p style={{ fontSize: '0.95rem', fontWeight: 'bold', margin: '0 6px' }}>
+                            Hi, {name}
+                        </p>
+
+                        <Link to="/posts">
+                            <BlobButton>My Posts</BlobButton>
+                        </Link>
 
                         <Link to="/generate">
                             <BlobButton>AI Write</BlobButton>

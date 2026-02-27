@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import Post from '../components/Post';
 import Layout from '../components/Layout';
-import Spinner from '../components/Spinner';
+import { SkeletonList } from '../components/Skeleton';
 import Pagination from '../components/Pagination';
 import { apiFetch } from '../utils/api';
 import '../styles/Pagination.css';
+import '../styles/Skeleton.css';
 
 export default function Posts() {
     const [posts, setPosts] = useState([]);
@@ -32,8 +33,10 @@ export default function Posts() {
     return (
         <>
             <Layout />
-            {loading && <Spinner fullPage />}
             {error && <p style={{ textAlign: 'center', color: '#c0392b', padding: '40px' }}>{error}</p>}
+
+            {loading && <SkeletonList count={4} />}
+
             {!loading && !error && (
                 <>
                     {posts.length > 0

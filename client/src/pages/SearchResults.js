@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Post from '../components/Post';
 import Layout from '../components/Layout';
-import Spinner from '../components/Spinner';
+import { SkeletonList } from '../components/Skeleton';
 import Pagination from '../components/Pagination';
 import { apiFetch } from '../utils/api';
 import '../styles/Pagination.css';
+import '../styles/Skeleton.css';
 
 /**
  * SearchResults — displays posts matching a search query.
@@ -57,7 +58,7 @@ export default function SearchResults() {
                     🔍 Search results for "{query}"
                 </h2>
 
-                {loading && <Spinner fullPage />}
+                {loading && <SkeletonList count={3} />}
                 {error && <p style={{ textAlign: 'center', color: '#c0392b', padding: '40px' }}>{error}</p>}
 
                 {!loading && !error && (

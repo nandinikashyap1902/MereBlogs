@@ -37,15 +37,21 @@ function parsePagination(query) {
     return { page, limit, skip: (page - 1) * limit };
 }
 
-// ─── GET /feed — Public feed (all posts, paginated, no auth) ─────────────────
+// ─── GET /feed — Public feed (all posts, paginated, sortable, no auth) ───────
 router.get('/feed', async (req, res) => {
     try {
         const { page, limit, skip } = parsePagination(req.query);
+        const { sort } = req.query;
+
+        // Supported sort modes: newest (default), popular (most views), trending (most likes)
+        let sortOption = { createdAt: -1 };
+        if (sort === 'popular') sortOption = { views: -1, createdAt: -1 };
+        else if (sort === 'trending') sortOption = { likes: -1, createdAt: -1 };
 
         const [posts, total] = await Promise.all([
             Post.find()
                 .populate('author', ['username'])
-                .sort({ createdAt: -1 })
+                .sort(sortOption)
                 .skip(skip)
                 .limit(limit),
             Post.countDocuments(),
@@ -175,11 +181,17 @@ router.get('/post', authMiddleware, async (req, res) => {
     }
 });
 
-// ─── GET /post/:id — Get a single post by ID (public) ───────────────────────
+// ─── GET /post/:id — Get a single post by ID (public, auto-increments views) ─
 router.get('/post/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const postDoc = await Post.findById(id).populate('author', ['username']);
+        // Atomically increment views and return the updated document
+        const postDoc = await Post.findByIdAndUpdate(
+            id,
+            { $inc: { views: 1 } },
+            { new: true }
+        ).populate('author', ['username']);
+
         if (!postDoc) {
             return res.status(404).json({ message: 'Post not found.' });
         }
@@ -253,6 +265,40 @@ router.delete('/post/:id', authMiddleware, async (req, res) => {
     } catch (err) {
         console.error('Delete post error:', err);
         res.status(500).json({ message: 'Internal server error. Please try again later.' });
+    }
+});
+
+// ─── POST /post/:id/like — Toggle like on a post ─────────────────────────────
+router.post('/post/:id/like', authMiddleware, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+        const postDoc = await Post.findById(id);
+
+        if (!postDoc) {
+            return res.status(404).json({ message: 'Post not found.' });
+        }
+
+        const alreadyLiked = postDoc.likes.includes(userId);
+
+        if (alreadyLiked) {
+            // Unlike — remove user from likes array
+            postDoc.likes.pull(userId);
+        } else {
+            // Like — add user to likes array
+            postDoc.likes.push(userId);
+        }
+
+        await postDoc.save();
+
+        res.json({
+            likeCount: postDoc.likes.length,
+            isLiked: !alreadyLiked,
+            message: alreadyLiked ? 'Post unliked.' : 'Post liked!',
+        });
+    } catch (err) {
+        console.error('Like post error:', err);
+        res.status(500).json({ message: 'Failed to toggle like.' });
     }
 });
 

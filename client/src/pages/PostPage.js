@@ -4,8 +4,9 @@ import { formatISO9075 } from 'date-fns';
 import DOMPurify from 'dompurify';
 import { UserContext } from '../context/UserContext';
 import { apiFetch, assetUrl } from '../utils/api';
-import Spinner from '../components/Spinner';
+import { PostPageSkeleton } from '../components/Skeleton';
 import '../styles/App.css';
+import '../styles/Skeleton.css';
 import Swal from 'sweetalert2';
 
 export function PostPage() {
@@ -13,6 +14,9 @@ export function PostPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [redirect, setRedirect] = useState(false);
+    const [likeCount, setLikeCount] = useState(0);
+    const [isLiked, setIsLiked] = useState(false);
+    const [likeLoading, setLikeLoading] = useState(false);
     const { id } = useParams();
     const { userInfo } = useContext(UserContext);
 
@@ -23,10 +27,36 @@ export function PostPage() {
                 if (!res.ok) throw new Error('Post not found.');
                 return res.json();
             })
-            .then(postinfo => setPostInfo(postinfo))
+            .then(postinfo => {
+                setPostInfo(postinfo);
+                setLikeCount(postinfo.likeCount ?? (postinfo.likes ? postinfo.likes.length : 0));
+                // Check if the current user has already liked
+                if (userInfo?.id && postinfo.likes) {
+                    setIsLiked(postinfo.likes.includes(userInfo.id));
+                }
+            })
             .catch(err => setError(err.message))
             .finally(() => setLoading(false));
-    }, [id]);
+    }, [id, userInfo?.id]);
+
+    async function toggleLike() {
+        if (!userInfo?.id) {
+            Swal.fire('Login required', 'Please log in to like posts.', 'info');
+            return;
+        }
+        setLikeLoading(true);
+        try {
+            const res = await apiFetch(`/post/${id}/like`, { method: 'POST' });
+            if (!res.ok) throw new Error('Failed to toggle like.');
+            const data = await res.json();
+            setLikeCount(data.likeCount);
+            setIsLiked(data.isLiked);
+        } catch (err) {
+            Swal.fire('Error', err.message, 'error');
+        } finally {
+            setLikeLoading(false);
+        }
+    }
 
     async function deletePost() {
         Swal.fire({
@@ -54,11 +84,10 @@ export function PostPage() {
     }
 
     if (redirect) return <Navigate to="/posts" />;
-    if (loading) return <Spinner fullPage />;
+    if (loading) return <PostPageSkeleton />;
     if (error) return <p style={{ textAlign: 'center', color: '#c0392b', padding: '40px' }}>{error}</p>;
     if (!postInfo) return null;
 
-    // Sanitize content client-side before rendering — double-layer defence with backend sanitization
     const safeContent = DOMPurify.sanitize(postInfo.content);
 
     return (
@@ -66,6 +95,30 @@ export function PostPage() {
             <h1>{postInfo.title}</h1>
             <time>{formatISO9075(new Date(postInfo.createdAt))}</time>
             <div className="author">by @{postInfo.author.username}</div>
+
+            {/* ── Engagement bar: likes + views ── */}
+            <div className="engagement-bar">
+                <button
+                    className={`like-btn ${isLiked ? 'like-btn--active' : ''}`}
+                    onClick={toggleLike}
+                    disabled={likeLoading}
+                    aria-label={isLiked ? 'Unlike this post' : 'Like this post'}
+                >
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill={isLiked ? '#e91e63' : 'none'} stroke={isLiked ? '#e91e63' : 'currentColor'} strokeWidth="2" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                    </svg>
+                    {likeCount} {likeCount === 1 ? 'Like' : 'Likes'}
+                </button>
+
+                <span className="engagement-bar__item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                    </svg>
+                    {postInfo.views ?? 0} Views
+                </span>
+            </div>
+
             <div className="post-page">
                 <div className="image">
                     {userInfo?.id === postInfo.author._id && (
@@ -85,7 +138,6 @@ export function PostPage() {
                     <img src={assetUrl(postInfo.cover)} alt={postInfo.title} />
                 </div>
             </div>
-            {/* DOMPurify sanitizes client-side; backend sanitize-html already cleaned on write */}
             <div className="content" dangerouslySetInnerHTML={{ __html: safeContent }} />
         </div>
     );
