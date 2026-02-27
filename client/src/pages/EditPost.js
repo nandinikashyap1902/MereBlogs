@@ -105,7 +105,6 @@ export default function EditPost() {
                         AI Improve
                     </BlobButton>
                 </div>
-
                 <BlobButton type="submit" style={{ marginTop: '20px' }}>Edit</BlobButton>
             </form>
         </div>
