@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { UserContext } from '../context/UserContext';
 import { apiFetch } from '../utils/api';
@@ -11,7 +11,7 @@ export default function Header() {
     const navigate = useNavigate();
     const { userInfo, setUserInfo } = useContext(UserContext);
     const [searchQuery, setSearchQuery] = useState('');
-    const location = useLocation();
+    
 
     useEffect(() => {
         apiFetch('/profile', { method: 'GET' })
