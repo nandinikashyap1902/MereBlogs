@@ -12,6 +12,7 @@ import Posts from './pages/Posts';
 import BlogGenerator from './pages/BlogGenerator';
 import Feed from './pages/Feed';
 import SearchResults from './pages/SearchResults';
+import SavedPosts from './pages/SavedPosts';
 
 // Components
 import Background from './components/Background';
@@ -31,6 +32,7 @@ function App() {
 
         {/* Protected — require login */}
         <Route path="/posts" element={<ProtectedRoute><Posts /></ProtectedRoute>} />
+        <Route path="/saved" element={<ProtectedRoute><SavedPosts /></ProtectedRoute>} />
         <Route path="/create" element={<ProtectedRoute><CreatePost /></ProtectedRoute>} />
         <Route path="/generate" element={<ProtectedRoute><BlogGenerator /></ProtectedRoute>} />
         <Route path="/edit/:id" element={<ProtectedRoute><EditPost /></ProtectedRoute>} />

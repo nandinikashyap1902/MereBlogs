@@ -11,7 +11,7 @@ export default function Header() {
     const navigate = useNavigate();
     const { userInfo, setUserInfo } = useContext(UserContext);
     const [searchQuery, setSearchQuery] = useState('');
-    
+
 
     useEffect(() => {
         apiFetch('/profile', { method: 'GET' })
@@ -77,6 +77,10 @@ export default function Header() {
 
                         <Link to="/posts">
                             <BlobButton>My Posts</BlobButton>
+                        </Link>
+
+                        <Link to="/saved">
+                            <BlobButton>Saved</BlobButton>
                         </Link>
 
                         <Link to="/generate">

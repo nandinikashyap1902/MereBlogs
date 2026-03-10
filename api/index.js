@@ -9,6 +9,8 @@ const path = require('path');
 // ─── Route modules & security middleware ─────────────────────────────────────
 const authRoutes = require('./routes/auth');
 const postRoutes = require('./routes/posts');
+const commentRoutes = require('./routes/comments');
+const savedRoutes = require('./routes/saved');
 const { apiLimiter } = require('./middleware/security');
 
 const app = express();
@@ -50,8 +52,10 @@ mongoose
     });
 
 // ─── Mount routes ─────────────────────────────────────────────────────────────
-app.use('/', authRoutes);  // /register, /login, /profile, /logout
-app.use('/', postRoutes);  // /post, /post/:id, /generate-blog, /improve-blog
+app.use('/', authRoutes);     // /register, /login, /profile, /logout
+app.use('/', postRoutes);     // /post, /post/:id, /feed, /search, /generate-blog
+app.use('/', commentRoutes);  // /post/:id/comments, /comment/:id
+app.use('/', savedRoutes);    // /saved, /post/:id/save, /saved/check/:id
 
 // ─── Global error handler ─────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
