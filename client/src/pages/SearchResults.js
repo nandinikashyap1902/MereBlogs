@@ -7,75 +7,61 @@ import Pagination from '../components/Pagination';
 import { apiFetch } from '../utils/api';
 import '../styles/Pagination.css';
 import '../styles/Skeleton.css';
+import '../styles/PostCard.css';
 
-/**
- * SearchResults — displays posts matching a search query.
- * The query comes from the URL: /search?q=keyword
- */
 export default function SearchResults() {
-    const [searchParams] = useSearchParams();
-    const query = searchParams.get('q') || '';
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get('q') || '';
 
-    const [posts, setPosts] = useState([]);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
-    const [total, setTotal] = useState(0);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
+  const [posts, setPosts] = useState([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-    useEffect(() => {
-        setPage(1); // reset to page 1 when query changes
-    }, [query]);
+  useEffect(() => { setPage(1); }, [query]);
 
-    useEffect(() => {
-        if (!query.trim()) {
-            setPosts([]);
-            setLoading(false);
-            return;
-        }
+  useEffect(() => {
+    if (!query.trim()) { setPosts([]); setLoading(false); return; }
+    setLoading(true);
+    setError(null);
+    apiFetch(`/search?q=${encodeURIComponent(query)}&page=${page}&limit=12`)
+      .then(res => { if (!res.ok) throw new Error('Search failed.'); return res.json(); })
+      .then(data => { setPosts(data.posts); setTotalPages(data.totalPages); setTotal(data.total); })
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [query, page]);
 
-        setLoading(true);
-        setError(null);
-        apiFetch(`/search?q=${encodeURIComponent(query)}&page=${page}&limit=10`, { method: 'GET' })
-            .then(res => {
-                if (!res.ok) throw new Error('Search failed.');
-                return res.json();
-            })
-            .then(data => {
-                setPosts(data.posts);
-                setTotalPages(data.totalPages);
-                setTotal(data.total);
-            })
-            .catch(err => setError(err.message))
-            .finally(() => setLoading(false));
-    }, [query, page]);
+  return (
+    <>
+      <Layout />
+      <div style={{ maxWidth: '1140px', margin: '0 auto', padding: '16px 20px 0' }}>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#1a1a2e', margin: 0 }}>
+          🔍 "{query}"
+        </h2>
+        <p style={{ color: '#888', fontSize: '0.85rem', margin: '4px 0 0' }}>
+          {loading ? 'Searching...' : `${total} ${total === 1 ? 'result' : 'results'} found`}
+        </p>
+      </div>
 
-    return (
+      {error && <p style={{ textAlign: 'center', color: '#c0392b', padding: '40px' }}>{error}</p>}
+      {loading && <SkeletonList count={6} />}
+
+      {!loading && !error && (
         <>
-            <Layout />
-            <div style={{ maxWidth: '960px', margin: '0 auto', padding: '10px' }}>
-                <h2 style={{ textAlign: 'center', margin: '20px 0', color: '#0505A9' }}>
-                    🔍 Search results for "{query}"
-                </h2>
-
-                {loading && <SkeletonList count={3} />}
-                {error && <p style={{ textAlign: 'center', color: '#c0392b', padding: '40px' }}>{error}</p>}
-
-                {!loading && !error && (
-                    <>
-                        <p style={{ textAlign: 'center', color: '#666', marginBottom: '16px' }}>
-                            {total} {total === 1 ? 'result' : 'results'} found
-                        </p>
-                        {posts.length > 0
-                            ? posts.map(post => <Post key={post._id} {...post} />)
-                            : <p style={{ textAlign: 'center', padding: '40px', color: '#888' }}>
-                                No posts match "{query}". Try different keywords.
-                            </p>
-                        }
-                        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
-                    </>
-                )}
+          {posts.length > 0 ? (
+            <div className="posts-grid">
+              {posts.map(post => <Post key={post._id} {...post} />)}
             </div>
+          ) : (
+            <p style={{ textAlign: 'center', padding: '60px', color: '#888' }}>
+              No posts match "{query}". Try different keywords.
+            </p>
+          )}
+          <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
         </>
-    );
+      )}
+    </>
+  );
 }
