@@ -1,242 +1,242 @@
 import { useState, useEffect, useContext } from 'react';
 import { Link, Navigate, useParams } from 'react-router-dom';
-import { formatISO9075 } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 import DOMPurify from 'dompurify';
 import { UserContext } from '../context/UserContext';
 import { apiFetch, assetUrl } from '../utils/api';
 import { PostPageSkeleton } from '../components/Skeleton';
 import Comments from '../components/Comments';
-import '../styles/App.css';
+import Swal from 'sweetalert2';
+import '../styles/PostPage.css';
 import '../styles/Skeleton.css';
 import '../styles/Comments.css';
-import Swal from 'sweetalert2';
 
 export function PostPage() {
-    const [postInfo, setPostInfo] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [redirect, setRedirect] = useState(false);
+  const [postInfo, setPostInfo]       = useState(null);
+  const [loading, setLoading]         = useState(true);
+  const [error, setError]             = useState(null);
+  const [redirect, setRedirect]       = useState(false);
+  const [likeCount, setLikeCount]     = useState(0);
+  const [isLiked, setIsLiked]         = useState(false);
+  const [likeLoading, setLikeLoading] = useState(false);
+  const [isSaved, setIsSaved]         = useState(false);
+  const [saveLoading, setSaveLoading] = useState(false);
+  const [copied, setCopied]           = useState(false);
 
-    // Engagement state
-    const [likeCount, setLikeCount] = useState(0);
-    const [isLiked, setIsLiked] = useState(false);
-    const [likeLoading, setLikeLoading] = useState(false);
-    const [isSaved, setIsSaved] = useState(false);
-    const [saveLoading, setSaveLoading] = useState(false);
-    const [copied, setCopied] = useState(false);
+  const { id }       = useParams();
+  const { userInfo } = useContext(UserContext);
 
-    const { id } = useParams();
-    const { userInfo } = useContext(UserContext);
+  /* ── Fetch post ─────────────────────────────────────────────── */
+  useEffect(() => {
+    setLoading(true);
+    apiFetch(`/post/${id}`)
+      .then(res => { if (!res.ok) throw new Error('Post not found.'); return res.json(); })
+      .then(p => {
+        setPostInfo(p);
+        setLikeCount(p.likeCount ?? (p.likes ? p.likes.length : 0));
+        if (userInfo?.id && p.likes) setIsLiked(p.likes.includes(userInfo.id));
+      })
+      .catch(err => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [id, userInfo?.id]);
 
-    // ── Load post + check save status ──────────────────────────────────────────
-    useEffect(() => {
-        setLoading(true);
-        apiFetch(`/post/${id}`)
-            .then(res => {
-                if (!res.ok) throw new Error('Post not found.');
-                return res.json();
-            })
-            .then(postinfo => {
-                setPostInfo(postinfo);
-                setLikeCount(postinfo.likeCount ?? (postinfo.likes ? postinfo.likes.length : 0));
-                if (userInfo?.id && postinfo.likes) {
-                    setIsLiked(postinfo.likes.includes(userInfo.id));
-                }
-            })
-            .catch(err => setError(err.message))
-            .finally(() => setLoading(false));
-    }, [id, userInfo?.id]);
+  /* ── Check saved ────────────────────────────────────────────── */
+  useEffect(() => {
+    if (!userInfo?.id) return;
+    apiFetch(`/saved/check/${id}`)
+      .then(r => r.ok ? r.json() : null)
+      .then(d => { if (d) setIsSaved(d.saved); });
+  }, [id, userInfo?.id]);
 
-    // Check if already saved (runs only when logged in)
-    useEffect(() => {
-        if (!userInfo?.id) return;
-        apiFetch(`/saved/check/${id}`)
-            .then(res => res.ok ? res.json() : null)
-            .then(data => { if (data) setIsSaved(data.saved); });
-    }, [id, userInfo?.id]);
+  /* ── Actions ────────────────────────────────────────────────── */
+  async function toggleLike() {
+    if (!userInfo?.id) { Swal.fire('Login required', 'Please log in to like posts.', 'info'); return; }
+    setLikeLoading(true);
+    try {
+      const res = await apiFetch(`/post/${id}/like`, { method: 'POST' });
+      if (!res.ok) throw new Error();
+      const d = await res.json();
+      setLikeCount(d.likeCount); setIsLiked(d.isLiked);
+    } catch { Swal.fire('Error', 'Could not update like.', 'error'); }
+    finally { setLikeLoading(false); }
+  }
 
-    // ── Like toggle ────────────────────────────────────────────────────────────
-    async function toggleLike() {
-        if (!userInfo?.id) {
-            Swal.fire('Login required', 'Please log in to like posts.', 'info');
-            return;
-        }
-        setLikeLoading(true);
-        try {
-            const res = await apiFetch(`/post/${id}/like`, { method: 'POST' });
-            if (!res.ok) throw new Error('Failed to toggle like.');
-            const data = await res.json();
-            setLikeCount(data.likeCount);
-            setIsLiked(data.isLiked);
-        } catch (err) {
-            Swal.fire('Error', err.message, 'error');
-        } finally {
-            setLikeLoading(false);
-        }
-    }
+  async function toggleSave() {
+    if (!userInfo?.id) { Swal.fire('Login required', 'Please log in to save posts.', 'info'); return; }
+    setSaveLoading(true);
+    try {
+      const res = await apiFetch(`/post/${id}/save`, { method: 'POST' });
+      if (!res.ok) throw new Error();
+      const d = await res.json(); setIsSaved(d.saved);
+    } catch { Swal.fire('Error', 'Could not update save.', 'error'); }
+    finally { setSaveLoading(false); }
+  }
 
-    // ── Save / Bookmark toggle ─────────────────────────────────────────────────
-    async function toggleSave() {
-        if (!userInfo?.id) {
-            Swal.fire('Login required', 'Please log in to save posts.', 'info');
-            return;
-        }
-        setSaveLoading(true);
-        try {
-            const res = await apiFetch(`/post/${id}/save`, { method: 'POST' });
-            if (!res.ok) throw new Error('Failed to toggle save.');
-            const data = await res.json();
-            setIsSaved(data.saved);
-        } catch (err) {
-            Swal.fire('Error', err.message, 'error');
-        } finally {
-            setSaveLoading(false);
-        }
-    }
+  function sharePost() {
+    const url = window.location.href;
+    if (navigator.share) { navigator.share({ title: postInfo?.title, url }); }
+    else { navigator.clipboard.writeText(url).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2500); }); }
+  }
 
-    // ── Share (copy link to clipboard) ────────────────────────────────────────
-    function sharePost() {
-        const url = window.location.href;
-        if (navigator.share) {
-            // Mobile: uses native share sheet
-            navigator.share({ title: postInfo?.title, url });
-        } else {
-            // Desktop: copy to clipboard
-            navigator.clipboard.writeText(url).then(() => {
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2500);
-            });
-        }
-    }
+  async function deletePost() {
+    const result = await Swal.fire({
+      title: 'Delete this post?', text: "This can't be undone.", icon: 'warning',
+      showCancelButton: true, confirmButtonColor: '#e53935', cancelButtonColor: '#aaa',
+      confirmButtonText: 'Yes, delete it',
+    });
+    if (!result.isConfirmed) return;
+    const res = await apiFetch(`/post/${id}`, { method: 'DELETE' });
+    if (res.ok) { Swal.fire('Deleted!', 'Post removed.', 'success'); setRedirect(true); }
+    else Swal.fire('Error', 'Failed to delete.', 'error');
+  }
 
-    // ── Delete post ────────────────────────────────────────────────────────────
-    async function deletePost() {
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!',
-        }).then(result => {
-            if (result.isConfirmed) {
-                apiFetch(`/post/${id}`, { method: 'DELETE' })
-                    .then(response => {
-                        if (response.ok) {
-                            Swal.fire('Deleted!', 'Your post has been deleted successfully.', 'success');
-                            setRedirect(true);
-                        } else {
-                            Swal.fire('Error!', 'Failed to delete the post.', 'error');
-                        }
-                    })
-                    .catch(() => Swal.fire('Error!', 'An error occurred.', 'error'));
-            }
-        });
-    }
+  if (redirect)  return <Navigate to="/posts" />;
+  if (loading)   return <PostPageSkeleton />;
+  if (error)     return (
+    <div className="pp-error">
+      <span>😕</span>
+      <p>{error}</p>
+      <Link to="/feed" className="pp-error__link">← Back to Feed</Link>
+    </div>
+  );
+  if (!postInfo) return null;
 
-    if (redirect) return <Navigate to="/posts" />;
-    if (loading) return <PostPageSkeleton />;
-    if (error) return <p style={{ textAlign: 'center', color: '#c0392b', padding: '40px' }}>{error}</p>;
-    if (!postInfo) return null;
+  const safeContent  = DOMPurify.sanitize(postInfo.content);
+  const authorName   = postInfo.author?.username?.split('@')[0] ?? 'Unknown';
+  const avatarLetter = authorName[0]?.toUpperCase() ?? '?';
+  const isAuthor     = userInfo?.id === postInfo.author?._id;
+  const readingMins  = Math.max(1, Math.ceil((DOMPurify.sanitize(postInfo.content, { ALLOWED_TAGS: [] })).split(' ').length / 200));
 
-    const safeContent = DOMPurify.sanitize(postInfo.content);
+  return (
+    <article className="pp">
 
-    return (
-        <div className="post-page">
-            <h1>{postInfo.title}</h1>
-            <time>{formatISO9075(new Date(postInfo.createdAt))}</time>
-            <div className="author">by @{postInfo.author.username}</div>
+      {/* ── Hero cover image ──────────────────────────────────── */}
+      <div className="pp__hero">
+        <img src={assetUrl(postInfo.cover)} alt={postInfo.title} className="pp__hero-img" />
+        <div className="pp__hero-overlay" />
 
-            {/* ── Engagement bar: likes + views ── */}
-            <div className="engagement-bar">
-                {/* Like button */}
-                <button
-                    className={`like-btn ${isLiked ? 'like-btn--active' : ''}`}
-                    onClick={toggleLike}
-                    disabled={likeLoading}
-                    aria-label={isLiked ? 'Unlike' : 'Like'}
-                >
-                    <svg width="20" height="20" viewBox="0 0 24 24"
-                        fill={isLiked ? '#e91e63' : 'none'}
-                        stroke={isLiked ? '#e91e63' : 'currentColor'}
-                        strokeWidth="2">
-                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                    </svg>
-                    {likeCount} {likeCount === 1 ? 'Like' : 'Likes'}
-                </button>
-
-                {/* Views */}
-                <span className="engagement-bar__item">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" strokeWidth="2">
-                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
-                        <circle cx="12" cy="12" r="3" />
-                    </svg>
-                    {postInfo.views ?? 0} Views
-                </span>
-
-                {/* ── Action row: Save + Share ── */}
-                <div className="action-bar">
-                    {/* Save / Bookmark */}
-                    <button
-                        className={`action-btn ${isSaved ? 'action-btn--saved' : ''}`}
-                        onClick={toggleSave}
-                        disabled={saveLoading}
-                        title={isSaved ? 'Remove from saved' : 'Save for later'}
-                    >
-                        <svg width="16" height="16" viewBox="0 0 24 24"
-                            fill={isSaved ? '#fff' : 'none'}
-                            stroke={isSaved ? '#fff' : 'currentColor'}
-                            strokeWidth="2">
-                            <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
-                        </svg>
-                        {isSaved ? 'Saved' : 'Save'}
-                    </button>
-
-                    {/* Share */}
-                    <button
-                        className={`action-btn ${copied ? 'action-btn--copied' : ''}`}
-                        onClick={sharePost}
-                        title="Share this post"
-                    >
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <circle cx="18" cy="5" r="3" />
-                            <circle cx="6" cy="12" r="3" />
-                            <circle cx="18" cy="19" r="3" />
-                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
-                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
-                        </svg>
-                        {copied ? 'Link Copied!' : 'Share'}
-                    </button>
-                </div>
-            </div>
-
-            {/* Cover image + edit/delete controls */}
-            <div className="post-page">
-                <div className="image">
-                    {userInfo?.id === postInfo.author._id && (
-                        <div className="edit-row">
-                            <Link className="edit-btn" to={`/edit/${postInfo._id}`}>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                </svg>
-                            </Link>
-                            <Link onClick={deletePost} className="delete-btn">
-                                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="24" height="100" viewBox="0 0 50 50">
-                                    <path d="M 25 3.0605469 L 24.5 3.3496094 L 8.5 12.587891 L 8 12.876953 L 8 13.453125 L 8 15.761719 L 8 16.339844 L 8.5019531 16.628906 L 10.052734 17.523438 L 12.005859 38.945312 L 12.052734 39.462891 L 12.501953 39.720703 L 24.501953 46.646484 L 25.001953 46.933594 L 25.501953 46.646484 L 37.501953 39.722656 L 37.949219 39.462891 L 37.996094 38.947266 L 39.949219 17.523438 L 41.501953 16.628906 L 42 16.339844 L 42 15.761719 L 42 13.453125 L 42 12.876953 L 41.5 12.587891 L 25.5 3.3496094 L 25 3.0605469 z" />
-                                </svg>
-                            </Link>
-                        </div>
-                    )}
-                    <img src={assetUrl(postInfo.cover)} alt={postInfo.title} />
-                </div>
-            </div>
-
-            {/* Post content */}
-            <div className="content" dangerouslySetInnerHTML={{ __html: safeContent }} />
-
-            {/* ── Comments section ── */}
-            <Comments postId={id} />
+        {/* Floating title block */}
+        <div className="pp__hero-text">
+          <h1 className="pp__title">{postInfo.title}</h1>
+          {postInfo.summary && <p className="pp__summary">{postInfo.summary}</p>}
         </div>
-    );
+      </div>
+
+      {/* ── Article shell ─────────────────────────────────────── */}
+      <div className="pp__shell">
+
+        {/* ── Meta bar ── */}
+        <div className="pp__meta">
+          <div className="pp__author">
+            <div className="pp__avatar">{avatarLetter}</div>
+            <div>
+              <span className="pp__author-name">@{authorName}</span>
+              <div className="pp__dates">
+                <time className="pp__date">
+                  {format(new Date(postInfo.createdAt), 'MMM d, yyyy')}
+                </time>
+                <span className="pp__dot">·</span>
+                <span className="pp__reading">{readingMins} min read</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Owner controls */}
+          {isAuthor && (
+            <div className="pp__owner-actions">
+              <Link to={`/edit/${postInfo._id}`} className="pp__ctrl pp__ctrl--edit" title="Edit">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+                Edit
+              </Link>
+              <button onClick={deletePost} className="pp__ctrl pp__ctrl--delete" title="Delete">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/>
+                  <path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/>
+                </svg>
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* ── Engagement strip ── */}
+        <div className="pp__engage">
+          {/* Like */}
+          <button
+            className={`pp__engage-btn pp__engage-btn--like ${isLiked ? 'pp__engage-btn--liked' : ''}`}
+            onClick={toggleLike} disabled={likeLoading}
+          >
+            <svg width="18" height="18" viewBox="0 0 24 24"
+              fill={isLiked ? '#e91e63' : 'none'}
+              stroke={isLiked ? '#e91e63' : 'currentColor'} strokeWidth="2">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+            <span>{likeCount} {likeCount === 1 ? 'Like' : 'Likes'}</span>
+          </button>
+
+          {/* Views */}
+          <span className="pp__engage-stat">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            {postInfo.views ?? 0} Views
+          </span>
+
+          {/* Divider */}
+          <div className="pp__engage-divider" />
+
+          {/* Save */}
+          <button
+            className={`pp__engage-btn ${isSaved ? 'pp__engage-btn--saved' : ''}`}
+            onClick={toggleSave} disabled={saveLoading}
+            title={isSaved ? 'Remove bookmark' : 'Save for later'}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24"
+              fill={isSaved ? 'currentColor' : 'none'}
+              stroke="currentColor" strokeWidth="2">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
+            </svg>
+            {isSaved ? 'Saved' : 'Save'}
+          </button>
+
+          {/* Share */}
+          <button
+            className={`pp__engage-btn ${copied ? 'pp__engage-btn--copied' : ''}`}
+            onClick={sharePost}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+            </svg>
+            {copied ? '✓ Copied!' : 'Share'}
+          </button>
+        </div>
+
+        {/* ── Post body content ── */}
+        <div
+          className="pp__content"
+          dangerouslySetInnerHTML={{ __html: safeContent }}
+        />
+
+        {/* ── Footer author card ── */}
+        <div className="pp__author-card">
+          <div className="pp__author-card-avatar">{avatarLetter}</div>
+          <div>
+            <p className="pp__author-card-name">Written by @{authorName}</p>
+            <p className="pp__author-card-sub">
+              Published {formatDistanceToNow(new Date(postInfo.createdAt), { addSuffix: true })}
+            </p>
+          </div>
+        </div>
+
+        {/* ── Comments ── */}
+        <Comments postId={id} />
+      </div>
+    </article>
+  );
 }
