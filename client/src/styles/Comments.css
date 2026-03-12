@@ -63,6 +63,8 @@
 
 .comment-submit-btn:hover:not(:disabled) {
     background: #0303cc;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(5, 5, 169, 0.3);
 }
 
 .comment-submit-btn:disabled {

@@ -1,86 +1,234 @@
-@import url("https://fonts.googleapis.com/css2?family=Sansita+Swashed:wght@600&display=swap");
-/* body { 
- 
-    height: 100%;
-    margin: 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  
- 
-} */
-.center {
+/* ═══════════════════════════════════════════════════════════════
+   Form.css — Premium forms, inputs, and authentication pages
+   ═══════════════════════════════════════════════════════════════ */
+
+.form-page {
+  min-height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  background: linear-gradient(160deg, #fafafe 0%, #f0f0ff 50%, #e8e8fe 100%);
   position: relative;
-  padding: 50px 50px;
-  background: #fff;
-  border-radius: 10px;
-  height: 100%;
-  max-width:600px;
-margin:0 auto;
-}
-.center h1 {
-  font-size: 2em;
-  border-left: 5px solid #0505A9;
-  padding: 10px;
-  color: #000;
-  letter-spacing: 5px;
-  margin-bottom: 60px;
-  font-weight: bold;
-  padding-left: 10px;
-}
-.center .inputbox {
-  position: relative;
-  width: 400px;
-  height: 50px;
-  margin-bottom: 50px;
-}
-.center .inputbox input {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  border: 2px solid #000;
-  outline: none;
-  background: none;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 1.2em;
-}
-.center .inputbox:last-child {
-  margin-bottom: 0;
-}
-.center .inputbox span {
-  position: absolute;
-  top: 14px;
-  left: 20px;
-  font-size: 1em;
-  transition: 0.6s;
-  font-family: sans-serif;
-}
-.center .inputbox input:focus ~ span,
-.center .inputbox input:valid ~ span {
-  transform: translateX(-13px) translateY(-35px);
-  font-size: 1em;
-}
-.center .inputbox [type="button"] {
-  width: 50%;
-  background: dodgerblue;
-  color: #fff;
-  border: #fff;
-}
-.center .inputbox:hover [type="button"] {
-  background: linear-gradient(45deg, greenyellow, dodgerblue);
+  overflow: hidden;
 }
 
- .createpost .inputbox [type="text"] {
+/* Base form card container */
+.form-container {
+  width: 100%;
+  max-width: 440px;
+  background: #fff;
+  border-radius: 20px;
+  padding: 48px 40px;
+  box-shadow: 0 12px 40px rgba(5, 5, 169, 0.06);
+  border: 1px solid #ebebf4;
   position: relative;
-  width: 400px;
-  height: 50px;
-  padding: 10px;
-  font-size: 1.2em;
-  outline: none;
+  z-index: 2;
 }
-.btn{
-  margin-top: 20px;
-  margin-left: 0;
+
+.form-container--wide {
+  max-width: 800px;
+  margin: 60px auto;
+  padding: 40px;
+}
+
+/* Decorative blobs behind forms */
+.form-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  z-index: 1;
+  pointer-events: none;
+}
+.form-blob--1 {
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(108, 99, 255, 0.2), transparent 70%);
+  top: 10%;
+  left: 20%;
+}
+.form-blob--2 {
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(5, 5, 169, 0.15), transparent 70%);
+  bottom: 10%;
+  right: 20%;
+}
+
+/* Titles */
+.form-container h1 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: #1a1a2e;
+  margin: 0 0 8px;
+  text-align: center;
+  letter-spacing: -0.5px;
+}
+
+.form-container p.subtitle {
+  font-size: 0.95rem;
+  color: #666;
+  text-align: center;
+  margin: 0 0 32px;
+}
+
+/* Form groups & Inputs */
+.form-group {
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid #dcdce6;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #1a1a2e;
+  background: #fdfdff;
+  transition: all 0.25s ease;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #0505A9;
+  background: #fff;
+  box-shadow: 0 0 0 4px rgba(5, 5, 169, 0.08);
+}
+
+.form-input::placeholder {
+  color: #aaa;
+}
+
+/* File upload custom input */
+.form-file-input {
+  width: 100%;
+  padding: 12px;
+  border: 2px dashed #c0c0d8;
+  border-radius: 12px;
+  background: #fdfdff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: #555;
+  transition: all 0.25s ease;
+}
+
+.form-file-input:hover {
+  border-color: #6c63ff;
+  background: #f7f7ff;
+}
+
+/* Select dropdowns */
+.form-select {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid #dcdce6;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-family: inherit;
+  color: #1a1a2e;
+  background: #fdfdff;
+  transition: all 0.25s ease;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23333' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  cursor: pointer;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #0505A9;
+  box-shadow: 0 0 0 4px rgba(5, 5, 169, 0.08);
+}
+
+/* Error messages */
+.form-error {
+  color: #e53935;
+  background: #fff0f0;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin-bottom: 24px;
+  border-left: 4px solid #e53935;
+}
+
+/* Submit Block */
+.form-actions {
+  margin-top: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-actions .btn {
+  width: 100%;
+  justify-content: center;
+  padding: 14px 28px;
+  font-size: 1.05rem;
+}
+
+/* Registration / Login toggles */
+.form-footer {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.form-footer a {
+  color: #0505A9;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.form-footer a:hover {
+  text-decoration: underline;
+}
+
+/* Override Quill Editor defaults to match new theme */
+.quill {
+  margin-bottom: 24px;
+}
+.ql-toolbar.ql-snow {
+  border: 1.5px solid #dcdce6 !important;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border-bottom: none !important;
+  background: #fafafe;
+  padding: 12px !important;
+}
+.ql-container.ql-snow {
+  border: 1.5px solid #dcdce6 !important;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  background: #fff;
+  font-family: inherit !important;
+  font-size: 1.05rem !important;
+  min-height: 300px;
+  cursor: text;
+}
+.ql-editor {
+  min-height: 300px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .form-container {
+    padding: 32px 24px;
+    border-radius: 16px;
+  }
+  .form-container h1 {
+    font-size: 1.8rem;
+  }
 }
