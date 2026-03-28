@@ -10,7 +10,6 @@ import Swal from 'sweetalert2';
 import '../styles/PostPage.css';
 import '../styles/Skeleton.css';
 import '../styles/Comments.css';
-
 export function PostPage() {
   const [postInfo, setPostInfo]       = useState(null);
   const [loading, setLoading]         = useState(true);
