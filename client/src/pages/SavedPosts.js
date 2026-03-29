@@ -5,7 +5,6 @@ import { SkeletonList } from '../components/Skeleton';
 import { apiFetch } from '../utils/api';
 import '../styles/Skeleton.css';
 import '../styles/PostCard.css';
-
 export default function SavedPosts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
