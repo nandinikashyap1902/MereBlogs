@@ -9,7 +9,6 @@ export default function SavedPosts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   useEffect(() => {
     apiFetch('/saved')
       .then(res => { if (!res.ok) throw new Error('Failed to load saved posts.'); return res.json(); })
