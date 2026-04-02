@@ -28,7 +28,6 @@ export default function SavedPosts() {
           Posts you've bookmarked to read later
         </p>
       </div>
-
       {loading && <SkeletonList count={4} />}
       {error && <p style={{ textAlign: 'center', color: '#c0392b', padding: '40px' }}>{error}</p>}
 
