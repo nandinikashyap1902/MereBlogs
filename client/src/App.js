@@ -29,7 +29,6 @@ function App() {
         <Route path="/feed" element={<Feed />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path="/post/:id" element={<PostPage />} />
-
         {/* Protected — require login */}
         <Route path="/posts" element={<ProtectedRoute><Posts /></ProtectedRoute>} />
         <Route path="/saved" element={<ProtectedRoute><SavedPosts /></ProtectedRoute>} />
