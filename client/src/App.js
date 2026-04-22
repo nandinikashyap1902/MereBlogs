@@ -1,7 +1,6 @@
 import './styles/App.css';
 import { UserContextProvider } from './context/UserContext';
 import { Route, Routes } from 'react-router-dom';
-
 // Pages
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
